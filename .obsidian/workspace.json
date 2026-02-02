@@ -4,24 +4,39 @@
     "type": "split",
     "children": [
       {
-        "id": "8b49bcb792b6b54c",
+        "id": "5e93712dff2ad8b9",
         "type": "tabs",
         "children": [
           {
-            "id": "3fe2aa54c6536cb2",
+            "id": "933f10654a125ab2",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "team/guchi/projects/インフルエンサー管理システムER図.md",
+                "file": "docs/reference/Welcome.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "インフルエンサー管理システムER図"
+              "title": "Welcome"
+            }
+          },
+          {
+            "id": "fc62976b990ab13f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "0202~.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "0202~"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -44,7 +59,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "ファイルエクスプローラ"
+              "title": "Files"
             }
           },
           {
@@ -78,7 +93,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 218.5
   },
   "right": {
     "id": "7e247ef8022f490c",
@@ -113,12 +128,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Welcome.md",
+                "file": "0202~.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Welcome"
+              "title": "Outgoing links from 0202~"
             }
           },
           {
@@ -156,17 +171,17 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Welcome.md",
+                "file": "0202~.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Welcome"
+              "title": "Outline of 0202~"
             }
           },
           {
-            "id": "2795e36eb45580f1",
+            "id": "0b0d28768bd07fd0",
             "type": "leaf",
             "state": {
               "type": "git-view",
@@ -176,7 +191,7 @@
             }
           },
           {
-            "id": "d3780870b548a5f8",
+            "id": "2bc5a57bebb08df7",
             "type": "leaf",
             "state": {
               "type": "calendar",
@@ -190,37 +205,42 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 269.5
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:クイックスイッチャーを開く": false,
-      "graph:グラフビューを開く": false,
-      "canvas:新規キャンバスを作成": false,
-      "daily-notes:今日のデイリーノートを開く": false,
-      "templates:テンプレートを挿入": false,
-      "command-palette:コマンドパレットを開く": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
       "bases:Create new base": false,
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "3fe2aa54c6536cb2",
+  "active": "0b0d28768bd07fd0",
   "lastOpenFiles": [
-    "docs/daily/相談事項.md",
-    "docs/daily/2026-01-23.md",
-    "team/guchi/projects/インフルエンサー管理システムER図.md",
-    "docs/projects/無題のファイル.md",
+    "docs/reference/Welcome.md",
+    "0202~.md",
+    "README.md",
+    "team/guchi/projects/インフルエンサー管理システムER図_レビュー結果.md",
+    "docs/クイックスタートガイド.md",
     "docs/projects/無題のファイル.canvas",
     "docs/新入社員向けオンボーディング.md",
-    "docs/クイックスタートガイド.md",
-    "README.md",
+    "docs/daily/相談事項.md",
+    "docs/daily/2026-01-23.md",
+    "team/guchi/code-snippets/Python-Dataview検索.md",
+    "team/guchi/projects/インフルエンサー管理システムER図.md",
+    "team/iku/ikuraちゃんに今後やって欲しいこと.md",
+    "Untitled.base",
+    "team/guchi/projects/Obsidian環境構築.md",
+    "docs/projects/無題のファイル.md",
     "無題のファイル.base",
     "無題のファイル.canvas",
     "docs/daily/2026-01-28.md",
-    "team/guchi/projects/Obsidian環境構築.md",
     "team/guchi/daily/2026-01-28.md",
     "team/guchi/notes/Obsidian使い方ガイド.md",
-    "team/guchi/code-snippets/Python-Dataview検索.md",
     "2026-01-28.md",
     "templates/project-template.md",
     "templates/meeting-note-template.md",
@@ -238,8 +258,6 @@
     "team/iku",
     "team/guchi",
     "team",
-    "assets",
-    "docs/reference/Welcome.md",
     "Welcome.md"
   ]
 }

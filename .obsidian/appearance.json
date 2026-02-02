@@ -1,6 +1,7 @@
 {
-  "cssTheme": "",
+  "cssTheme": "Retroma",
   "enabledCssSnippets": [
     "custom"
-  ]
+  ],
+  "accentColor": "#ea5cf5"
 }
