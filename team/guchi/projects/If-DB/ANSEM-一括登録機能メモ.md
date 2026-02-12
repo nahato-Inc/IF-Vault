@@ -221,12 +221,12 @@ related_tables:
 | お届け先名称２ | recipient_name（2件目） | 2つ目の住所として登録 |
 | お届け先電話番号 | phone_number | |
 
-#### 担当・部署
+#### 担当・ジャンル
 
 | 現行スプシ | 新DB | 備考 |
 |-----------|------|------|
 | 担当者 | t_influencer_agent_assignments.agent_id | m_agentsと紐付け |
-| 第一〜第五 | m_departments 参照 | 担当部署 |
+| 第一〜第五 | — | 担当者の部署。m_agents.department_idから自動で引けるためテンプレート不要 |
 | ジャンル | t_account_categories.category_id | m_categoriesと紐付け |
 
 #### 除外した列
@@ -254,84 +254,79 @@ related_tables:
 ```
 🟦 基本情報          🟩 SNS            🟨 銀行口座        🟪 請求先・住所
 ┌───────────────┬──────────────┬──────────────┬─────────────────┐
-│ A: 担当者      │ J: Instagram │ O: 銀行名    │ T: 適格請求書番号│
-│ B: 担当部署    │ K: YouTube   │ P: 支店名    │ U: 請求先名     │
-│ C: マスター名  │ L: Twitter/X │ Q: 口座種別  │ V: 請求部署名   │
-│ D: コンプラ    │ M: TikTok    │ R: 口座番号  │ W: 郵便番号     │
-│ E: 区分       │ N: その他SNS  │ S: 口座名義  │ X: 住所         │
-│ F: 所属名     │              │              │ Y: 届け先名称   │
-│ G: 様/御中    │              │              │ Z: 電話番号     │
-│ H: メールアドレス│             │              │                │
-│ I: ジャンル    │              │              │                │
+│ A: 担当者      │ I: Instagram │ N: 銀行名    │ S: 適格請求書番号│
+│ B: マスター名  │ J: YouTube   │ O: 支店名    │ T: 請求先名     │
+│ C: コンプラ    │ K: Twitter/X │ P: 口座種別  │ U: 請求部署名   │
+│ D: 区分       │ L: TikTok    │ Q: 口座番号  │ V: 郵便番号     │
+│ E: 所属名     │ M: その他SNS  │ R: 口座名義  │ W: 住所         │
+│ F: 様/御中    │              │              │ X: 届け先名称   │
+│ G: メールアドレス│             │              │ Y: 電話番号     │
+│ H: ジャンル    │              │              │                │
 └───────────────┴──────────────┴──────────────┴─────────────────┘
 ```
 
-**合計26列**（A〜Z）
+**合計25列**（A〜Y）
+
+> [!NOTE]
+> 「担当部署」列は削除。担当者を選べば `m_agents.department_id` から部署は自動で引けるため、
+> 同じデータを2箇所に持たない（正規化の原則）。
 
 ### 各列の詳細定義
 
-#### 🟦 基本情報（A〜I列）
+#### 🟦 基本情報（A〜H列）
 
 | 列 | 列名 | 入力方式 | バリデーション | DB先 |
 |----|------|---------|-------------|------|
 | A | 担当者 | ドロップダウン | m_agents一覧から選択 | t_influencer_agent_assignments |
-| B | 担当部署 | ドロップダウン | 第一〜第五 | m_departments |
-| C | マスター名 | 自由入力 | 必須。空白不可 | m_influencers.influencer_name |
-| D | コンプラチェック | ドロップダウン | ○ / × | m_influencers.compliance_check |
-| E | 区分 | ドロップダウン | 事務所所属 / フリーランス / 企業専属 | m_influencers.affiliation_type_id |
-| F | 所属名(正式名称) | 自由入力 | 区分が「事務所」の場合は必須 | m_influencers.affiliation_name |
-| G | 様/御中 | ドロップダウン | 様 / 御中 / さん | m_influencers.honorific |
-| H | メールアドレス | 自由入力 | メール形式チェック | m_influencers.email_address |
-| I | ジャンル | ドロップダウン | m_categories一覧から選択 | t_account_categories |
+| B | マスター名 | 自由入力 | 必須。空白不可 | m_influencers.influencer_name |
+| C | コンプラチェック | ドロップダウン | ○ / × | m_influencers.compliance_check |
+| D | 区分 | ドロップダウン | 事務所所属 / フリーランス / 企業専属 | m_influencers.affiliation_type_id |
+| E | 所属名(正式名称) | 自由入力 | 区分が「事務所」の場合は必須 | m_influencers.affiliation_name |
+| F | 様/御中 | ドロップダウン | 様 / 御中 / さん | m_influencers.honorific |
+| G | メールアドレス | 自由入力 | メール形式チェック | m_influencers.email_address |
+| H | ジャンル | ドロップダウン | m_categories一覧から選択 | t_account_categories |
 
-#### 🟩 SNS（J〜N列）
-
-| 列 | 列名 | 入力方式 | バリデーション | DB先 |
-|----|------|---------|-------------|------|
-| J | Instagram | 自由入力 | URL形式 or アカウント名 | t_influencer_sns_accounts (platform=1) |
-| K | YouTube | 自由入力 | URL形式 or チャンネル名 | t_influencer_sns_accounts (platform=2) |
-| L | Twitter/X | 自由入力 | URL形式 or @ユーザー名 | t_influencer_sns_accounts (platform=3) |
-| M | TikTok | 自由入力 | URL形式 or @ユーザー名 | t_influencer_sns_accounts (platform=4) |
-| N | その他SNS | 自由入力 | 任意 | t_influencer_sns_accounts (platform=5) |
-
-#### 🟨 銀行口座（O〜S列）
+#### 🟩 SNS（I〜M列）
 
 | 列 | 列名 | 入力方式 | バリデーション | DB先 |
 |----|------|---------|-------------|------|
-| O | 銀行名 | 自由入力 | 「銀行」不要 | t_bank_accounts.bank_name |
-| P | 支店名 | 自由入力 | 「支店」不要。ゆうちょは漢数字3桁 | t_bank_accounts.branch_name |
-| Q | 口座種別 | ドロップダウン | 普通 / 当座 / 貯蓄 | t_bank_accounts.account_type |
-| R | 口座番号 | 自由入力 | 半角数字7桁 | t_bank_accounts.account_number |
-| S | 口座名義 | 自由入力 | 全角カタカナ（小文字不可） | t_bank_accounts.account_holder_name |
+| I | Instagram | 自由入力 | URL形式 or アカウント名 | t_influencer_sns_accounts (platform=1) |
+| J | YouTube | 自由入力 | URL形式 or チャンネル名 | t_influencer_sns_accounts (platform=2) |
+| K | Twitter/X | 自由入力 | URL形式 or @ユーザー名 | t_influencer_sns_accounts (platform=3) |
+| L | TikTok | 自由入力 | URL形式 or @ユーザー名 | t_influencer_sns_accounts (platform=4) |
+| M | その他SNS | 自由入力 | 任意 | t_influencer_sns_accounts (platform=5) |
 
-#### 🟪 請求先・住所（T〜Z列）
+#### 🟨 銀行口座（N〜R列）
 
 | 列 | 列名 | 入力方式 | バリデーション | DB先 |
 |----|------|---------|-------------|------|
-| T | 適格請求書番号 | 自由入力 | T+13桁の形式チェック | t_billing_info.invoice_registration_number |
-| U | 請求先名 | 自由入力 | 様/御中をつける | t_billing_info.billing_name |
-| V | 請求部署名 | 自由入力 | 任意 | t_billing_info.billing_department |
-| W | 郵便番号 | 自由入力 | XXX-XXXX形式 | t_addresses.postal_code |
-| X | 住所 | 自由入力 | | t_addresses.address_line1 |
-| Y | 届け先名称 | 自由入力 | | t_addresses.recipient_name |
-| Z | 電話番号 | 自由入力 | 数字+ハイフン | t_addresses.phone_number |
+| N | 銀行名 | 自由入力 | 「銀行」不要 | t_bank_accounts.bank_name |
+| O | 支店名 | 自由入力 | 「支店」不要。ゆうちょは漢数字3桁 | t_bank_accounts.branch_name |
+| P | 口座種別 | ドロップダウン | 普通 / 当座 / 貯蓄 | t_bank_accounts.account_type |
+| Q | 口座番号 | 自由入力 | 半角数字7桁 | t_bank_accounts.account_number |
+| R | 口座名義 | 自由入力 | 全角カタカナ（小文字不可） | t_bank_accounts.account_holder_name |
+
+#### 🟪 請求先・住所（S〜Y列）
+
+| 列 | 列名 | 入力方式 | バリデーション | DB先 |
+|----|------|---------|-------------|------|
+| S | 適格請求書番号 | 自由入力 | T+13桁の形式チェック | t_billing_info.invoice_registration_number |
+| T | 請求先名 | 自由入力 | 様/御中をつける | t_billing_info.billing_name |
+| U | 請求部署名 | 自由入力 | 任意 | t_billing_info.billing_department |
+| V | 郵便番号 | 自由入力 | XXX-XXXX形式 | t_addresses.postal_code |
+| W | 住所 | 自由入力 | | t_addresses.address_line1 |
+| X | 届け先名称 | 自由入力 | | t_addresses.recipient_name |
+| Y | 電話番号 | 自由入力 | 数字+ハイフン | t_addresses.phone_number |
 
 ### ドロップダウン値の対応表
 
 ```
-【担当部署】（B列）
-  第一 → department_id（m_departmentsから）
-  第二 → 〃
-  第三 → 〃
-  第四 → 〃
-  第五 → 〃
-
-【区分】（E列）
+【区分】（D列）
   事務所所属 → affiliation_type_id = 1
   フリーランス → affiliation_type_id = 2
   企業専属 → affiliation_type_id = 3
 
-【口座種別】（Q列）
+【口座種別】（P列）
   普通 → 1
   当座 → 2
   貯蓄 → 3
@@ -361,7 +356,6 @@ related_tables:
 
 1. **「選択肢」シートを追加**（非表示にする）
    - 担当者一覧（m_agentsの名前リスト）
-   - 部署一覧（第一、第二、第三、第四、第五）
    - 区分（事務所所属、フリーランス、企業専属）
    - コンプラ（○、×）
    - 敬称（様、御中、さん）
@@ -369,18 +363,17 @@ related_tables:
    - ジャンル一覧（m_categoriesの名前リスト）
 
 2. **データの入力規則を設定**（各ドロップダウン列）
-   - A列: データ → データの入力規則 → リスト（「選択肢」シートから）
-   - B列: 同上
-   - D, E, G, I, Q 列: 同上
+   - A列（担当者）: データ → データの入力規則 → リスト（「選択肢」シートから）
+   - C, D, F, H, P 列: 同上
 
 ### Step 4: 入力規則（バリデーション）
 
 | 列 | ルール |
 |----|-------|
-| H（メール） | テキスト → 有効なメールアドレス |
-| R（口座番号） | テキスト → カスタム数式 `=AND(LEN(R2)=7, ISNUMBER(VALUE(R2)))` |
-| T（請求書番号） | テキスト → カスタム数式 `=REGEXMATCH(T2, "^T[0-9]{13}$")` |
-| W（郵便番号） | テキスト → カスタム数式 `=REGEXMATCH(W2, "^[0-9]{3}-[0-9]{4}$")` |
+| G（メール） | テキスト → 有効なメールアドレス |
+| Q（口座番号） | テキスト → カスタム数式 `=AND(LEN(Q2)=7, ISNUMBER(VALUE(Q2)))` |
+| S（請求書番号） | テキスト → カスタム数式 `=REGEXMATCH(S2, "^T[0-9]{13}$")` |
+| V（郵便番号） | テキスト → カスタム数式 `=REGEXMATCH(V2, "^[0-9]{3}-[0-9]{4}$")` |
 
 ### Step 5: 補助機能
 
@@ -394,8 +387,8 @@ related_tables:
    - 「わからなかったら空欄でOK、後で確認します」の一言
 
 3. **条件付き書式**
-   - C列（マスター名）が空 → 赤背景（必須項目の強調）
-   - H列がメール形式でない → 赤背景
+   - B列（マスター名）が空 → 赤背景（必須項目の強調）
+   - G列がメール形式でない → 赤背景
 
 ### Step 6: 共有設定
 
