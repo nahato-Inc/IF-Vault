@@ -10,14 +10,21 @@
 
 ## ANSEM IF-DB プロジェクト
 
-### 設計書の場所
-- `team/guchi/projects/If-DB/テーブル定義/ANSEM-ER図.md` - DB設計書（DDL全量、v5.4.0）
-- `team/guchi/projects/If-DB/レビュー結果/ANSEM-ER図レビュー.md` - v5.2.0レビュー結果
-- `team/guchi/projects/If-DB/レビュー結果/インフルエンサー管理システムER図_レビュー結果.md` - 初版レビュー結果
-- `team/guchi/projects/If-DB/ER図/ANSEM-ER図（ビジュアル版）.md` - Mermaid ER図
-- `team/guchi/projects/If-DB/ER図/インフルエンサー管理システムER図.md` - 初版ER図
-- `team/guchi/projects/If-DB/ANSEM-データ投入運用方針.md` - 運用方針
-- `team/guchi/projects/If-DB/当初から変更になったもの.md` - 変更経緯・会議メモ
+### ドキュメント一覧
+
+#### 設計・ER図
+- `team/guchi/projects/If-DB/テーブル定義/ANSEM-ER図.md` - DB設計書本体（DDL全量、v5.4.0）
+- `team/guchi/projects/If-DB/ER図/ANSEM-ER図（ビジュアル版）.md` - Mermaid ER図（ドメイン別分割）
+- `team/guchi/projects/If-DB/レビュー結果/ANSEM-ER図レビュー.md` - 設計レビュー結果
+
+#### 運用・機能
+- `team/guchi/projects/If-DB/ANSEM-データ投入運用方針.md` - データ投入の運用方針
+- `team/guchi/projects/If-DB/ANSEM-一括登録機能メモ.md` - 一括登録機能の仕様メモ
+- `team/guchi/projects/If-DB/ANSEM-追加機能ロードマップ.md` - 追加機能ロードマップ（Phase 1-4）
+- `team/guchi/projects/If-DB/ANSEM-要件変更ログ.md` - 会議メモ・当初要件からの変更点
+
+#### アーカイブ（旧版）
+- `team/guchi/projects/If-DB/_archive/` - ANSEM以前の初版ファイル（参照用）
 
 ### SQLファイル（実行用DDL）
 - `team/guchi/projects/If-DB/sql/001_create_tables.sql` - テーブル作成（32テーブル、FK依存順）
@@ -130,4 +137,4 @@
 ---
 
 _guchiの作業スペース設定（口調・スタイル設定含む）_
-_最終更新: 2026-02-09_
+_最終更新: 2026-02-12_

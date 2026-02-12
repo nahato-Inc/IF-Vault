@@ -3,7 +3,7 @@ tags: [ANSEM, database, design, review]
 created: 2026-02-06
 updated: 2026-02-10
 status: completed
-related: "[[ANSEM-ER図]]"
+related: "[[ANSEM-ER図]], [[ANSEM-ER図（ビジュアル版）]]"
 ---
 
 # ANSEM DB設計書 レビュー結果

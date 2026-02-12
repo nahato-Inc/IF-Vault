@@ -2,7 +2,7 @@
 tags: [ANSEM, database, design, ER図, mermaid]
 created: 2026-02-07
 updated: 2026-02-12
-related: "[[ANSEM-ER図]]"
+related: "[[ANSEM-ER図]], [[ANSEM-ER図レビュー]]"
 ---
 
 # ANSEM ER図（ビジュアル版）

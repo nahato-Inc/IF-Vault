@@ -4,6 +4,7 @@ created: 2026-02-06
 updated: 2026-02-12
 status: completed
 version: 5.4.0
+related: "[[ANSEM-ER図（ビジュアル版）]], [[ANSEM-ER図レビュー]], [[ANSEM-要件変更ログ]], [[ANSEM-データ投入運用方針]]"
 ---
 
 # ANSEMプロジェクト データベース設計書
