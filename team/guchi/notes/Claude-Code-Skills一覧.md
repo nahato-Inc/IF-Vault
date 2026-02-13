@@ -45,7 +45,7 @@ status: active
 ### UI/UXデザイン（13個）
 | スキル | 内容 | ソース |
 |--------|------|--------|
-| ux-psychology | アプリ開発特化UX 29原則+10H+AI UX+ニューロダイバーシティ（415+246行） | 自作 |
+| ux-psychology | アプリ開発特化UX 29原則+10H+AI UX+ニューロダイバーシティ（450+246行） | 自作 |
 | baseline-ui | エージェント向けUI制約ガイド（`/baseline-ui`） | ibelick/ui-skills |
 | fixing-accessibility | アクセシビリティ修正（`/fixing-accessibility`） | ibelick/ui-skills |
 | fixing-metadata | メタデータ修正（`/fixing-metadata`） | ibelick/ui-skills |
@@ -148,6 +148,11 @@ ibelick系はコマンド呼び出し式なので自動発火は限定的。実�
 ---
 
 ## 変更ログ
+
+### 2026-02-14: v2.4 スコープ制御+レビューフォーマット追加
+- **更新**: ux-psychology v4.1（450行+246行）
+  - 「When NOT to Apply」セクション追加（スコープ外の明示で誤発火防止）
+  - 「UI Review Output Format」セクション追加（レビュー出力テンプレート）
 
 ### 2026-02-14: v2.3 ux-psychology多方面レビュー版
 - **更新**: ux-psychology v4.0（415行+246行）
