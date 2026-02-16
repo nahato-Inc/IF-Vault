@@ -18,20 +18,21 @@
 
 ```
 /
+├── .claude/                # Claude Code設定・プロジェクトメモリ
+├── assets/                 # リソース
 ├── docs/
 │   ├── onboarding/         # オンボーディング資料（統合版）
-│   └── reference/          # リファレンス
-├── team/
-│   ├── guchi/              # guchiの作業スペース
-│   │   ├── daily/          # デイリーノート
-│   │   ├── projects/       # プロジェクト管理
-│   │   ├── notes/          # 技術メモ
-│   │   └── code-snippets/  # コードスニペット
-│   ├── iku/                # ikuの作業スペース
-│   └── muro/               # muroの作業スペース
-├── templates/              # テンプレート
+│   ├── reference/          # リファレンス
+│   └── technical/          # 技術資料
+├── projects/
+│   └── If-DB/              # IF-DBプロジェクト関連
 ├── task_rules/             # タスク管理ルール
-└── assets/                 # リソース
+├── team/
+│   ├── ikuta/              # ikutaの作業スペース
+│   ├── kawamuro/           # kawamuroの作業スペース
+│   ├── sekiguchi/          # sekiguchiの作業スペース
+│   └── shared/             # 共有リソース
+└── templates/              # テンプレート
 ```
 
 ## インストール済みプラグイン
@@ -100,4 +101,4 @@
 ---
 
 _このファイルはClaude Codeがプロジェクトコンテキストを理解するための永続メモリです_
-_最終更新: 2026-02-13_
+_最終更新: 2026-02-17_
