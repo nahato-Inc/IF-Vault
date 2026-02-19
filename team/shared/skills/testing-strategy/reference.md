@@ -197,85 +197,61 @@ test('debounce delays execution', async () => {
 
 ---
 
-## D. Playwright Advanced Patterns (TypeScript)
+## D. Playwright Advanced Patterns
 
 ### D-1. Page Object Model
 
-```typescript
-// e2e/pages/login-page.ts
-import { type Page, type Locator } from '@playwright/test'
+```python
+class LoginPage:
+    def __init__(self, page):
+        self.page = page
+        self.email = page.get_by_label('Email')
+        self.password = page.get_by_label('Password')
+        self.submit = page.get_by_role('button', name='Sign in')
 
-export class LoginPage {
-  readonly email: Locator
-  readonly password: Locator
-  readonly submit: Locator
-
-  constructor(private page: Page) {
-    this.email = page.getByLabel('Email')
-    this.password = page.getByLabel('Password')
-    this.submit = page.getByRole('button', { name: 'Sign in' })
-  }
-
-  async login(email: string, password: string) {
-    await this.email.fill(email)
-    await this.password.fill(password)
-    await this.submit.click()
-    await this.page.waitForLoadState('networkidle')
-  }
-}
+    def login(self, email, password):
+        self.email.fill(email)
+        self.password.fill(password)
+        self.submit.click()
+        self.page.wait_for_load_state('networkidle')
 ```
 
 ### D-2. Network Interception
 
-```typescript
-import { test, expect } from '@playwright/test'
+```python
+def handle_route(route):
+    route.fulfill(
+        status=200,
+        content_type='application/json',
+        body='{"users": [{"id": 1, "name": "Test"}]}'
+    )
 
-test('displays mocked users', async ({ page }) => {
-  await page.route('**/api/users', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ users: [{ id: 1, name: 'Test' }] }),
-    })
-  })
-  await page.goto('http://localhost:3000/users')
-  await expect(page.getByText('Test')).toBeVisible()
-})
+page.route('**/api/users', handle_route)
+page.goto('http://localhost:3000/users')
 ```
 
 ### D-3. Console Log Capture
 
-```typescript
-import { test, expect } from '@playwright/test'
+```python
+logs = []
+page.on('console', lambda msg: logs.append(f'{msg.type}: {msg.text}'))
+page.goto('http://localhost:3000')
 
-test('no console errors on page load', async ({ page }) => {
-  const logs: string[] = []
-  page.on('console', (msg) => logs.push(`${msg.type()}: ${msg.text()}`))
-  await page.goto('http://localhost:3000')
-
-  const errors = logs.filter((log) => log.startsWith('error:'))
-  expect(errors).toHaveLength(0)
-})
+errors = [log for log in logs if log.startswith('error:')]
+assert len(errors) == 0, f'Console errors found: {errors}'
 ```
 
-### D-4. Playwright Config with webServer
+### D-4. Multi-Server Setup
 
-```typescript
-// playwright.config.ts
-import { defineConfig } from '@playwright/test'
+```bash
+# Single server
+python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_automation.py
 
-export default defineConfig({
-  webServer: [
-    {
-      command: 'npm run dev',
-      port: 5173,
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
-  use: {
-    baseURL: 'http://localhost:5173',
-  },
-})
+# Multiple servers (backend + frontend)
+python scripts/with_server.py \
+  --server "cd backend && python server.py" --port 3000 \
+  --server "cd frontend && npm run dev" --port 5173 \
+  -- python your_automation.py
 ```
 
 ---

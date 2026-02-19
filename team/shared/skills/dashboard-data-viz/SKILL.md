@@ -1,6 +1,6 @@
 ---
 name: dashboard-data-viz
-description: "Use when building dashboards, admin panels, data tables, charts, KPI cards, real-time views, filter UIs, or export features with Next.js App Router, Tailwind CSS, Supabase, and TanStack Table. Covers sidebar layout, KPI card grids, data tables (sorting, filtering, pagination, row selection, inline editing), chart selection (Recharts, Tremor, sparklines), Supabase Realtime updates, filter patterns (faceted, date range, multi-select), loading states, and export actions (CSV, PDF, bulk). Does NOT cover DB schema design or SQL optimization (ansem-db-patterns, supabase-postgres-best-practices), UX psychology (ux-psychology), or component design patterns (react-component-patterns)."
+description: "Dashboard UI patterns for admin panels and analytics views with Next.js App Router, Tailwind CSS, Supabase, and TanStack Table. Covers sidebar layout, KPI card grids, data tables (sorting, filtering, pagination, row selection, inline editing), chart selection (Recharts, Tremor, sparklines), real-time updates (Supabase Realtime, optimistic UI), filter patterns (faceted, date range, multi-select), loading states, and export actions (CSV, PDF, bulk). Use when building dashboards, designing admin panels, implementing data tables, creating charts or KPI cards, configuring real-time views, composing filter UIs, adding export features, or fetching Supabase data for dashboard components. Does NOT cover design tokens (design-token-system), component API design (react-component-patterns), or database schema (ansem-db-patterns)."
 user-invocable: false
 ---
 
@@ -174,7 +174,7 @@ Server-sideのSupabaseクエリ構築パターンは [reference.md](reference.md
 
 避けるべき: 3Dチャート、6カテゴリ超のPieChart（→BarChart）、二重Y軸（→2つのチャートに分割）
 
-チャート選択フローチャートは [reference.md](reference.md) セクションA参照。
+> 上記テーブルはクイックリファレンス。データ構造から段階的にチャートを選ぶ詳細な決定フローチャートは [reference.md](reference.md) セクションA参照。
 
 ### 11. ライブラリ選択
 

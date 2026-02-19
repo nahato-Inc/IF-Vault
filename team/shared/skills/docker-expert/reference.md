@@ -247,6 +247,41 @@ docker compose --profile development up
 docker compose --profile production up
 ```
 
+### Docker Secrets Management
+
+Use Docker Compose `secrets:` to avoid passing sensitive data through environment variables.
+
+```yaml
+services:
+  backend:
+    image: myapp:latest
+    secrets:
+      - db_password
+      - api_key
+    environment:
+      - DB_PASSWORD_FILE=/run/secrets/db_password
+      - API_KEY_FILE=/run/secrets/api_key
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  api_key:
+    environment: API_KEY
+```
+
+Reading secrets at runtime in the application:
+
+```javascript
+const fs = require('fs');
+
+function readSecret(name) {
+  const filePath = `/run/secrets/${name}`;
+  return fs.readFileSync(filePath, 'utf8').trim();
+}
+
+const dbPassword = readSecret('db_password');
+```
+
 ### Multi-Architecture Builds
 
 Build images for multiple CPU architectures (amd64 + arm64).

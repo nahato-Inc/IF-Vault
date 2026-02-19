@@ -1,6 +1,6 @@
 ---
 name: supabase-postgres-best-practices
-description: "Use when writing, reviewing, or optimizing SQL queries, diagnosing slow queries with EXPLAIN ANALYZE, configuring connection pooling (Supavisor), tuning RLS performance, implementing concurrency control, or resolving Postgres bottlenecks in Supabase. Covers indexing (B-tree, GIN, GiST, BRIN, composite, partial, covering), EXPLAIN ANALYZE, Supavisor pooling (transaction/session modes, pool sizing, timeouts), RLS performance (auth.uid() subquery caching, SECURITY DEFINER), concurrency (deadlock prevention, SKIP LOCKED queues, advisory locks, statement_timeout), data access (N+1 elimination, cursor/keyset pagination, batch inserts, UPSERT), monitoring (pg_stat_statements, pg_stat_user_indexes, VACUUM/ANALYZE), Edge Function connections, full-text search tsvector, JSONB GIN indexing, unused index detection. Does NOT cover: schema design/naming/types (ansem-db-patterns), auth flows/RLS creation (supabase-auth-patterns), debugging process (systematic-debugging), regression tests (testing-strategy)."
+description: "Postgres query performance optimization and runtime best practices for Supabase. Covers indexing strategies (B-tree, GIN, GiST, BRIN, composite, partial, covering), EXPLAIN ANALYZE diagnostics, connection pooling (Supavisor transaction/session modes, pool sizing), RLS performance patterns (auth.uid() subquery caching, SECURITY DEFINER bypass), concurrency control (deadlock prevention, SKIP LOCKED, advisory locks), data access optimization (N+1 elimination, keyset pagination, batch inserts, UPSERT), runtime monitoring (pg_stat_statements, VACUUM/ANALYZE), and advanced tuning (full-text search, JSONB GIN indexing). Use when writing, reviewing, or optimizing SQL queries, diagnosing slow queries with EXPLAIN, configuring connection pooling, tuning RLS performance, implementing concurrent processing, detecting unused indexes, or resolving Postgres bottlenecks. Does NOT cover schema design (ansem-db-patterns), auth/RLS policy design (supabase-auth-patterns), or TypeScript types (typescript-best-practices)."
 user-invocable: false
 ---
 
@@ -73,8 +73,8 @@ Equality columns first, range columns last. Leftmost prefix rule applies.
 -- Good: status (=) before created_at (>)
 CREATE INDEX idx ON orders (status, created_at);
 -- Works for: WHERE status = 'pending'
--- Works for: WHERE status = 'pending' AND created_at > '2000-01-01'
--- Does NOT work for: WHERE created_at > '2000-01-01' alone
+-- Works for: WHERE status = 'pending' AND created_at > '2024-01-01'
+-- Does NOT work for: WHERE created_at > '2024-01-01' alone
 ```
 
 ### Choose Index Type by Query Pattern
@@ -185,28 +185,21 @@ const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!) // Must be pooler URL
 `auth.uid()` called per-row is 100x slower than cached in subquery.
 
 ```sql
--- BAD: auth.uid() evaluated per row
-CREATE POLICY p ON orders USING (auth.uid() = user_id);
-
--- GOOD: cached via subquery, evaluated once
-CREATE POLICY p ON orders USING ((SELECT auth.uid()) = user_id);
+-- BAD: USING (auth.uid() = user_id)
+-- GOOD: USING ((SELECT auth.uid()) = user_id)
 ```
+
+Full example: see [reference.md](reference.md)
 
 ### Security Definer for Complex Checks
 
 ```sql
-CREATE FUNCTION is_team_member(team_id bigint) RETURNS boolean
-LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.team_members
-    WHERE team_id = $1 AND user_id = (SELECT auth.uid())
-  );
-$$;
-
+-- BAD: complex JOIN inside RLS policy directly
+-- GOOD: SECURITY DEFINER function wrapping the check
 CREATE POLICY p ON orders USING ((SELECT is_team_member(team_id)));
 ```
 
-Always index columns used in RLS policies: `CREATE INDEX idx ON orders (user_id);`
+Full example: see [reference.md](reference.md). Always index columns used in RLS policies.
 
 -> RLS policy design and auth patterns -> `supabase-auth-patterns`
 -> Debugging slow RLS queries: use `systematic-debugging` Phase 1 with EXPLAIN ANALYZE
@@ -235,12 +228,11 @@ SELECT * FROM accounts WHERE id IN (1, 2) ORDER BY id FOR UPDATE;
 ### SKIP LOCKED Queue Pattern
 
 ```sql
-UPDATE jobs SET status = 'processing', worker_id = $1, started_at = now()
-WHERE id = (
-  SELECT id FROM jobs WHERE status = 'pending'
-  ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED
-) RETURNING *;
+-- SELECT ... FOR UPDATE SKIP LOCKED in subquery, UPDATE in outer query
+-- Prevents worker contention on job queues
 ```
+
+Full example: see [reference.md](reference.md)
 
 -> Advisory locks, deadlock detection: [reference.md](reference.md)
 

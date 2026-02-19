@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: "Use when diagnosing bugs, isolating test failures, tracing unexpected behavior, resolving build errors, stabilizing flaky tests, or debugging integration failures. Four-phase root-cause methodology: investigate, analyze patterns, test hypotheses, verify fixes. Covers error message reading, reproduction steps, git-bisect diagnostics, multi-component boundary logging, backward data-flow tracing, working-vs-broken comparison, single-variable hypothesis testing, and 3-fix architectural escalation. Does NOT cover error classification or logging (error-handling-logging), test writing (testing-strategy), or security analysis (security-review)."
+description: "Four-phase root-cause debugging methodology: investigate, analyze patterns, test hypotheses, and verify fixes. Covers error message reading, reproduction steps, git-bisect diagnostics, multi-component boundary logging, backward data-flow tracing, working-vs-broken comparison, single-variable hypothesis testing, and the 3-fix architectural escalation rule. Use when diagnosing bugs, isolating test failures, tracing unexpected behavior, resolving build errors, profiling performance regressions, stabilizing flaky tests, debugging integration failures, troubleshooting CI pipeline breaks, or when previous fix attempts have not resolved the issue. Does NOT cover test writing (testing-strategy), error classification (error-handling-logging), or security vulnerability detection (security-review)."
 user-invocable: false
 ---
 
@@ -58,15 +58,9 @@ This reveals which layer fails (e.g., secrets -> workflow OK, workflow -> build 
 
 ### 1.5 Trace Data Flow Backward
 
-When error is deep in call stack, trace backward to the source:
+When error is deep in call stack, trace backward from symptom to source: find the throwing line, then ask "what called this with bad data?" repeatedly until you reach the origin. Fix at the source, not the symptom.
 
-1. Observe the symptom (error message, wrong output)
-2. Find immediate cause (which line throws?)
-3. What called this with bad data?
-4. Keep tracing up until you find the origin
-5. Fix at source, not at symptom
-
-See `reference.md` for the complete tracing technique with examples.
+See reference.md > Root Cause Tracing for the complete 5-step technique with examples.
 
 ## Phase 2: Pattern Analysis [HIGH]
 
@@ -148,14 +142,11 @@ Count how many fixes you have attempted:
 
 If you catch yourself thinking any of these, STOP immediately:
 
-- "Quick fix for now, investigate later"
-- "Just try changing X and see"
-- "I see the problem, let me fix it" (seeing symptoms != understanding root cause)
-- "Multiple changes at once, then run tests"
-- "Skip the test, manually verify"
-- "I don't fully understand but this might work"
-- Proposing solutions before tracing data flow
-- Listing fixes without prior investigation
+- **Acting without understanding**: "Quick fix for now" / "Just try changing X" / "I don't fully understand but this might work"
+- **Confusing symptoms with root cause**: "I see the problem, let me fix it" (seeing symptoms != understanding)
+- **Multiple changes at once**: changing several things then running tests (violates single-variable rule)
+- **Skipping verification**: "Skip the test, manually verify"
+- **Proposing solutions before investigation**: listing fixes or solutions before tracing data flow
 
 ## User Signals of Process Violation [HIGH]
 
@@ -182,9 +173,9 @@ Note: most "no root cause" cases are incomplete investigation.
 
 ## Supporting Techniques [MEDIUM]
 
-See `reference.md` for condensed versions of each technique:
+See `reference.md` for condensed versions. Full detail in separate files:
 
-- **Root cause tracing** - Backward call-stack tracing to find original trigger
-- **Defense-in-depth validation** - Multi-layer validation (entry, business, environment, debug)
-- **Condition-based waiting** - Replace arbitrary timeouts with condition polling
-- **Test polluter bisection** - Script to isolate test-state pollution
+- **`root-cause-tracing.md`** - Backward call-stack tracing to find original trigger
+- **`defense-in-depth.md`** - Multi-layer validation (entry, business, environment, debug)
+- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`find-polluter.sh`** - Bisection script to isolate test-state pollution

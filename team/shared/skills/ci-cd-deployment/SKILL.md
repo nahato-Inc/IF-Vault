@@ -1,6 +1,6 @@
 ---
 name: ci-cd-deployment
-description: "Use when setting up CI/CD pipelines, creating or debugging GitHub Actions workflows, configuring Vercel deployment, automating build and test stages, managing secrets across environments, or implementing branch protection. Covers workflow syntax (triggers, concurrency, matrix, reusable workflows), Vercel preview and production deploys, parallel testing pipelines (lint, type-check, test, build), environment variable and secrets management across local/CI/Vercel, trunk-based branch strategies, and Dependabot automation. Does NOT cover test design or TDD (testing-strategy), Dockerfile optimization (docker-expert), or code-level vulnerability detection (security-review)."
+description: "CI/CD pipeline architecture with GitHub Actions and Vercel deployment for Next.js applications. Covers workflow syntax (triggers, concurrency, matrix, reusable workflows), Vercel preview and production deploys, automated testing pipelines (lint, type-check, test, build in parallel), environment variable and secrets management across local/CI/Vercel, trunk-based branch strategies with protection rules, and Dependabot dependency automation. Use when setting up CI/CD pipelines, creating or debugging GitHub Actions workflows, configuring Vercel deployment settings, automating build and test stages, managing secrets across environments, or implementing branch protection and merge strategies. Does NOT cover Docker image optimization (docker-expert), test writing (testing-strategy), or app code patterns (nextjs-app-router-patterns)."
 user-invocable: false
 ---
 
@@ -81,36 +81,18 @@ jobs:
 
   type-check: # For strict config, see `typescript-best-practices`
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
+    steps: # Same setup as lint job
       - run: npm run type-check
 
   test:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
+    steps: # Same setup as lint job
       - run: npm test
 
   build:
     runs-on: ubuntu-latest
     needs: [lint, type-check, test]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
+    steps: # Same setup as lint job
       - run: npm run build
 ```
 

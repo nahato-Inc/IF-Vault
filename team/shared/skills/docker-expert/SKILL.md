@@ -1,12 +1,12 @@
 ---
 name: docker-expert
-description: "Use when creating, debugging, or optimizing Dockerfiles, writing docker-compose.yml configs, implementing multi-stage builds, reducing image size with distroless or alpine bases, hardening container security with non-root users and pinned digests, configuring health checks and restart policies, managing Docker networking or volumes, building multi-arch images with buildx, setting up dev environments with hot reload, troubleshooting container startup failures or OOM kills, or scanning images for vulnerabilities. Does NOT cover CI/CD pipeline workflows (ci-cd-deployment), code-level vulnerability detection (security-review), or app-level logging (error-handling-logging)."
+description: "Docker containerization, image optimization, and container orchestration expertise. Use when creating, debugging, or optimizing Dockerfiles, writing docker-compose.yml configurations, implementing multi-stage builds, reducing image size with distroless or alpine bases, hardening container security with non-root users and pinned digests, configuring health checks and restart policies, managing Docker networking or volumes, building multi-architecture images with buildx, setting up development environments with hot reload, troubleshooting container startup failures or OOM kills, analyzing layer caching for build performance, or scanning images for vulnerabilities with trivy or docker scout. Does NOT cover CI/CD pipelines (ci-cd-deployment), app architecture (nextjs-app-router-patterns), or security auditing (security-review)."
 user-invocable: false
 ---
 
 # Docker Expert
 
-Docker containerization patterns: Dockerfile optimization, multi-stage builds, container security, networking, and Docker Compose orchestration.
+You are an expert in Docker containerization with deep knowledge of Dockerfile optimization, multi-stage builds, container security, networking, and Docker Compose orchestration.
 
 ## When to Apply
 
@@ -43,7 +43,7 @@ Need Docker help?
   |
   +-- Setting up multi-container app?
   |     +-- docker-compose.yml -> Section 3
-  |     +-- Need dev hot reload -> reference.md (Task 4)
+  |     +-- Need dev hot reload -> reference.md (Task 5)
   |
   +-- Debugging container issues?
   |     +-- Container won't start -> Troubleshooting table
@@ -107,23 +107,7 @@ Key principles:
 3. Use smallest possible base image for production stage
 4. Add signal handling (dumb-init or tini)
 
-```dockerfile
-# Pattern: builder -> minimal runtime
-FROM node:lts-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build && npm prune --omit=dev
-
-FROM node:lts-alpine
-RUN apk add --no-cache dumb-init
-# ... non-root user, COPY --from=builder, HEALTHCHECK
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/index.js"]
-```
-
-> Complete Node.js, Python, Go examples: see [reference.md](reference.md)
+> Full example: see reference.md Task 1
 
 ### [MEDIUM] Base Image Selection Guide
 

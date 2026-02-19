@@ -1,6 +1,6 @@
 ---
 name: testing-strategy
-description: "Use when writing tests, designing test suites, or implementing TDD for TypeScript/Vitest projects. Covers Red-Green-Refactor cycle, test quality analysis (overmocking, flaky tests, assertion strength), unit vs integration vs E2E selection, AAA pattern, mock boundary rules, coverage targets, bug-fix testing protocol, and Playwright browser automation. Also use when reviewing test quality or coverage gaps, detecting test smells, choosing test granularity, or refactoring with test safety. Does NOT cover: CI pipeline config (ci-cd-deployment), error architecture (error-handling-logging), root cause debugging (systematic-debugging)."
+description: "Test architecture and TDD workflow for TypeScript/Vitest projects. Covers Red-Green-Refactor cycle, test quality analysis (overmocking detection, flaky test elimination, assertion strength), unit vs integration vs E2E test selection, AAA pattern, mock boundary rules, coverage target strategy, bug-fix testing protocol, and Playwright browser automation. Use when writing tests, designing test suites, implementing features test-first, fixing bugs with regression tests, reviewing test quality or coverage gaps, detecting test smells, choosing test granularity, refactoring with test safety, or automating browser testing for web apps. Does NOT cover debugging methodology (systematic-debugging), error handling architecture (error-handling-logging), or security vulnerability detection (security-review)."
 user-invocable: false
 ---
 
@@ -121,52 +121,25 @@ Code before test, test passes immediately, can't explain why test failed, ration
 
 See reference.md sections A-1 through A-4 for detailed anti-patterns with code examples.
 
-### Overmocking [CRITICAL]
-**Detection**: More than 3-4 mocks per test, mocking pure functions, complex mock setup exceeding test body.
-**Fix**: Mock only I/O boundaries (APIs, databases, filesystem).
+**Overmocking** [CRITICAL]
+- **Detection**: More than 3-4 mocks per test, mocking pure functions, complex mock setup exceeding test body.
+- **Fix**: Mock only I/O boundaries (APIs, databases, filesystem).
+- Code example: see reference.md A-1
 
-```typescript
-// BAD: Overmocked - testing implementation, not behavior
-const mockAdd = vi.fn(() => 10)
+**Fragile Tests** [HIGH]
+- **Detection**: CSS selectors, implementation details, breaks on refactor.
+- **Fix**: Use semantic selectors (`getByRole`, `getByText`).
+- Code example: see reference.md A-2
 
-// GOOD: Mock only external dependencies
-const mockPricingAPI = vi.fn(() => ({ tax: 0.1 }))
-const total = calculateTotal(order, mockPricingAPI)
-expect(total).toBe(38)
-```
+**Flaky Tests** [CRITICAL]
+- **Detection**: Arbitrary timeouts, race conditions, ordering dependency.
+- **Fix**: Proper async handling (`await`), deterministic assertions.
+- Code example: see reference.md A-3
 
-### Fragile Tests [HIGH]
-```typescript
-// BAD: Tests implementation details (CSS selectors)
-await page.locator('.form-container > div:nth-child(2) > button').click()
-
-// GOOD: Semantic selector (survives refactors)
-await page.getByRole('button', { name: 'Submit' }).click()
-```
-
-### Flaky Tests [CRITICAL]
-```typescript
-// BAD: Race condition with arbitrary timeout
-fetchData()
-await new Promise(resolve => setTimeout(resolve, 1000))
-expect(data).toBeDefined()
-
-// GOOD: Proper async handling
-const data = await fetchData()
-expect(data).toBeDefined()
-```
-
-### Poor Assertions [HIGH]
-```typescript
-// BAD: Weak assertion (passes with any truthy value)
-expect(users).toBeDefined()
-
-// GOOD: Strong, specific assertions
-expect(user).toMatchObject({
-  id: expect.any(Number),
-  name: 'John',
-})
-```
+**Poor Assertions** [HIGH]
+- **Detection**: `toBeDefined()`, `toBeTruthy()` — passes with any truthy value.
+- **Fix**: Specific assertions (`toMatchObject`, `toEqual`, `toHaveLength`).
+- Code example: see reference.md A-4
 
 ### Test Structure: AAA Pattern [HIGH]
 
@@ -225,16 +198,17 @@ test('registered user receives welcome email', async () => {
 
 ## Part 4: Web App Testing with Playwright [MEDIUM]
 
-Write Playwright tests in TypeScript for testing local web applications. See reference.md sections D-1 through D-4 for advanced patterns.
+Write native Python Playwright scripts for testing local web applications. See reference.md sections D-1 through D-4 for advanced patterns.
 
 ### Decision Tree [HIGH]
 
 ```
 User task -> Is it static HTML?
     +-- Yes -> Read HTML file to identify selectors
-    |         -> Write Playwright test using selectors
+    |         -> Write Playwright script using selectors
     +-- No (dynamic webapp) -> Is the server already running?
-        +-- No -> Configure webServer in playwright.config.ts
+        +-- No -> Run: python scripts/with_server.py --help
+        |        Then use the helper + write Playwright script
         +-- Yes -> Reconnaissance-then-action:
             1. Navigate and wait for networkidle
             2. Take screenshot or inspect DOM
@@ -242,22 +216,23 @@ User task -> Is it static HTML?
             4. Execute actions with discovered selectors
 ```
 
-### Playwright Test Template [MEDIUM]
+### Playwright Script Template [MEDIUM]
 
-```typescript
-import { test, expect } from '@playwright/test'
+```python
+from playwright.sync_api import sync_playwright
 
-test('page loads and displays content', async ({ page }) => {
-  await page.goto('http://localhost:5173')
-  await page.waitForLoadState('networkidle') // CRITICAL: Wait for JS
-  // ... automation logic
-  await expect(page.getByRole('heading')).toBeVisible()
-})
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    page.goto('http://localhost:5173')
+    page.wait_for_load_state('networkidle')  # CRITICAL: Wait for JS
+    # ... automation logic
+    browser.close()
 ```
 
 ### Reconnaissance-Then-Action Pattern [MEDIUM]
 
-1. **Inspect**: `await page.screenshot({ path: '/tmp/inspect.png', fullPage: true })`
+1. **Inspect**: `page.screenshot(path='/tmp/inspect.png', full_page=True)`
 2. **Identify selectors** from inspection results
 3. **Execute actions** using discovered selectors
 

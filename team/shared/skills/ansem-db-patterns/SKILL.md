@@ -1,6 +1,6 @@
 ---
 name: ansem-db-patterns
-description: "Use when designing PostgreSQL tables, writing DDL, choosing FK delete policies, defining column constraints, reviewing schema designs, planning migrations, selecting data types, implementing audit trails, or structuring aggregation tables. Covers naming conventions (m_/t_ prefixes, entity-based PKs), data types (TEXT over VARCHAR, TIMESTAMPTZ, DECIMAL for money, BIGINT identity), constraints (RESTRICT/CASCADE/SET NULL, NOT NULL, CHECK), audit columns, optimistic locking, soft delete, period management, snapshot+FK denormalization, polymorphic tables, JSONB with GIN, RANGE partitioning, UPSERT, and Enum vs SMALLINT+COMMENT. Does NOT cover query optimization (supabase-postgres-best-practices), RLS policies (supabase-auth-patterns), or app-layer error handling (error-handling-logging)."
+description: "PostgreSQL schema design patterns from a production system. Covers table naming (m_/t_ prefixes, entity-based PKs), data types (TEXT over VARCHAR, TIMESTAMPTZ, DECIMAL, BIGINT identity), constraints (FK delete policies, NOT NULL rules, CHECK), audit columns, updated_at triggers, optimistic locking, soft delete, period management, snapshot denormalization, polymorphic tables, dictionary vs COMMENT, JSONB/GIN, translation tables, RANGE partitioning, UPSERT, and index strategy. Use when designing tables, writing DDL, choosing FK delete policies, defining constraints, reviewing schema designs, planning migrations, selecting data types, implementing audit trails, or structuring aggregation tables. Does NOT cover query performance (supabase-postgres-best-practices) or auth/RLS policies (supabase-auth-patterns)."
 user-invocable: false
 ---
 
@@ -140,7 +140,7 @@ PostgreSQLのデフォルトはNO ACTIONだが、本規約ではRESTRICTを明�
 | **CASCADE** | 親なしで意味がない子 | IF→住所・口座、1対1セキュリティ |
 | **SET NULL** | 任意の参照を切る（NULLABLE FK） | パートナー→IF兼業、IF→国 |
 
-判断フロー: 子データに独立した価値がある→RESTRICT、親なしで意味なし→CASCADE、参照がNULLABLEで任意→SET NULL。詳細フローチャートは reference.md 参照。
+判断フロー: 子に独立価値→RESTRICT、親なし無意味→CASCADE、NULLABLE任意→SET NULL。詳細フローチャートは reference.md 参照。
 
 ### 10. 監査カラム [HIGH]
 

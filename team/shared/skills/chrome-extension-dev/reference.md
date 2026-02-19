@@ -248,6 +248,58 @@ my-extension/
 
 ---
 
+## Chrome API Mock Examples
+
+Use `vi.mock` (Vitest) to stub `chrome.*` APIs in unit tests for content-logic and SW-handler modules.
+
+### chrome.storage.local
+
+```ts
+const store: Record<string, unknown> = {};
+vi.stubGlobal('chrome', {
+  storage: {
+    local: {
+      get: vi.fn(async (keys: string[]) =>
+        Object.fromEntries(keys.map(k => [k, store[k]]))
+      ),
+      set: vi.fn(async (items: Record<string, unknown>) => {
+        Object.assign(store, items);
+      }),
+    },
+  },
+});
+```
+
+### chrome.runtime.sendMessage
+
+```ts
+vi.stubGlobal('chrome', {
+  runtime: {
+    sendMessage: vi.fn().mockResolvedValue({ ok: true }),
+    onMessage: {
+      addListener: vi.fn(),
+    },
+  },
+});
+```
+
+### chrome.tabs.query
+
+```ts
+vi.stubGlobal('chrome', {
+  tabs: {
+    query: vi.fn().mockResolvedValue([
+      { id: 1, url: 'https://example.com', active: true },
+    ]),
+    sendMessage: vi.fn().mockResolvedValue(undefined),
+  },
+});
+```
+
+Combine stubs as needed. Reset with `vi.restoreAllMocks()` in `afterEach`.
+
+---
+
 ## Troubleshooting
 
 | Problem | Cause | Solution |

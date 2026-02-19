@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: "Use when asked to 'security review', 'find vulnerabilities', 'check for security issues', 'audit security', 'OWASP review', 'pen test code', 'threat model', 'check for injection', 'find XSS', 'review auth bypass', or assess code for SQL injection, XSS, SSRF, CSRF, IDOR, deserialization, path traversal, command injection, cryptography weaknesses, or hardcoded secrets. Traces attacker-controlled input, verifies exploitability against framework mitigations, classifies severity per OWASP Top 10 and CWE, and outputs structured remediation. Does NOT cover auth flow implementation (supabase-auth-patterns), container hardening (docker-expert), or pipeline security design (ci-cd-deployment)."
+description: "Detect, analyze, and report exploitable security vulnerabilities in application code and infrastructure configs. Use when asked to 'security review', 'find vulnerabilities', 'check for security issues', 'audit security', 'OWASP review', 'pen test code', 'threat model', 'check for injection', 'find XSS', 'review auth bypass', or assess code for SQL injection, XSS, SSRF, CSRF, IDOR, deserialization, path traversal, command injection, cryptography weaknesses, or hardcoded secrets. Traces attacker-controlled input, verifies exploitability against framework mitigations, classifies severity per OWASP Top 10 and CWE, and outputs structured remediation. Does NOT cover error handling architecture (error-handling-logging), debugging methodology (systematic-debugging), or test writing (testing-strategy)."
 user-invocable: false
 ---
 
@@ -79,16 +79,7 @@ response = requests.get(request.GET.get('url'))
 ```
 
 ### [HIGH] Framework-Mitigated Patterns
-Check language guides before flagging. Common false positives:
-
-| Pattern | Why It's Usually Safe |
-|---------|----------------------|
-| Django `{{ variable }}` | Auto-escaped by default |
-| React `{variable}` | Auto-escaped by default |
-| Vue `{{ variable }}` | Auto-escaped by default |
-| `User.objects.filter(id=input)` | ORM parameterizes queries |
-| `cursor.execute("...%s", (input,))` | Parameterized query |
-| `innerHTML = "<b>Loading...</b>"` | Constant string, no user input |
+Check language guides before flagging (common false positive patterns: see reference.md).
 
 **Only flag these when:**
 - Django: `{{ var|safe }}`, `{% autoescape off %}`, `mark_safe(user_input)`
@@ -188,57 +179,23 @@ Skip theoretical issues. Report only what you've confirmed is exploitable after 
 ## [CRITICAL] Quick Patterns Reference
 
 ### [CRITICAL] Always Flag (Critical)
-```
-eval(user_input)           # Any language
-exec(user_input)           # Any language
-pickle.loads(user_data)    # Python
-yaml.load(user_data)       # Python (not safe_load)
-unserialize($user_data)    # PHP
-deserialize(user_data)     # Java ObjectInputStream
-shell=True + user_input    # Python subprocess
-child_process.exec(user)   # Node.js
-```
+
+eval/exec/pickle.loads/yaml.load(not safe_load)/unserialize/deserialize with user input. shell=True + user input. child_process.exec with user input.
 
 ### [HIGH] Always Flag (High)
-```
-innerHTML = userInput              # DOM XSS
-dangerouslySetInnerHTML={user}     # React XSS
-v-html="userInput"                 # Vue XSS
-f"SELECT * FROM x WHERE {user}"    # SQL injection
-`SELECT * FROM x WHERE ${user}`    # SQL injection
-os.system(f"cmd {user_input}")     # Command injection
-```
+
+innerHTML/dangerouslySetInnerHTML/v-html with user input (XSS). String-interpolated SQL with user input (SQLi). os.system/subprocess with user input (command injection).
 
 ### [CRITICAL] Always Flag (Secrets)
-```
-password = "hardcoded"
-api_key = "sk-..."
-AWS_SECRET_ACCESS_KEY = "..."
-private_key = "-----BEGIN"
-```
+
+Hardcoded passwords, API keys (`sk-...`), AWS secrets, private keys in source code.
 
 ### [MEDIUM] Check Context First (Investigate Before Flagging)
-```
-# SSRF - ONLY if URL is from user input, NOT from settings/config
-requests.get(request.GET['url'])     # FLAG: User-controlled URL
-requests.get(settings.API_URL)       # SAFE: Server-controlled config
-requests.get(f"{settings.BASE}/{x}") # CHECK: Is 'x' user input?
 
-# Path traversal - ONLY if path is from user input
-open(request.GET['file'])            # FLAG: User-controlled path
-open(settings.LOG_PATH)              # SAFE: Server-controlled config
-open(f"{BASE_DIR}/{filename}")       # CHECK: Is 'filename' user input?
-
-# Open redirect - ONLY if URL is from user input
-redirect(request.GET['next'])        # FLAG: User-controlled redirect
-redirect(settings.LOGIN_URL)         # SAFE: Server-controlled config
-
-# Weak crypto - ONLY if used for security purposes
-hashlib.md5(file_content)            # SAFE: File checksums, caching
-hashlib.md5(password)                # FLAG: Password hashing
-random.random()                      # SAFE: Non-security uses (UI, sampling)
-random.random() for token            # FLAG: Security tokens need secrets module
-```
+- **SSRF**: Flag only if URL from user input, not from settings/config
+- **Path traversal**: Flag only if path from user input, not from config
+- **Open redirect**: Flag only if redirect URL from user input
+- **Weak crypto**: Flag md5/random only for security purposes (passwords, tokens), not checksums/UI
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: nextjs-app-router-patterns
-description: "Use when building or migrating to App Router, designing nested routing, configuring caching or revalidation, implementing streaming, creating Route Handlers, optimizing SEO metadata, or writing auth/i18n middleware. Covers Next.js 15 routing (parallel, intercepting, route groups, dynamic segments), data fetching and caching (ISR, tag-based revalidation, use cache, PPR), Suspense streaming, Server Actions with revalidation, Route Handlers, generateMetadata/generateStaticParams, and Middleware. Does NOT cover component design (react-component-patterns), runtime performance (vercel-react-best-practices), or error boundaries (error-handling-logging)."
+description: "Next.js 15 App Router architecture patterns for routing (parallel, intercepting, route groups, dynamic/catch-all segments), data fetching and caching (ISR, tag-based revalidation, use cache, PPR), Suspense streaming, Server Actions with revalidation, Route Handlers, generateMetadata/generateStaticParams for SEO, and Middleware. Use when building or migrating to App Router, designing nested routing, configuring caching or revalidation, implementing streaming, creating Route Handlers, optimizing SEO metadata, or writing auth/i18n middleware. Does NOT cover component design (react-component-patterns), runtime performance (vercel-react-best-practices), or error classification, logging strategy, or Sentry integration (error-handling-logging)."
 user-invocable: false
 ---
 
@@ -22,7 +22,7 @@ Next.js 15 App Router のルーティング、データフェッチ、キャッ�
 
 - コンポーネント設計・合成パターン・SC/CC境界設計 -> react-component-patterns
 - React/Next.js パフォーマンス最適化ルール -> vercel-react-best-practices
-- error.tsx boundary の階層設計・ログ・Sentry -> error-handling-logging
+- エラー分類・ログ戦略・Sentry連携 -> error-handling-logging（error.tsx File Convention は本スキルでカバー）
 - Tailwind トークン・ユーティリティ設計 -> tailwind-design-system
 - 認証・Supabase 連携 -> supabase-auth-patterns
 - テスト戦略 -> testing-strategy
@@ -49,12 +49,26 @@ app/
 ├── layout.tsx          # 共有UIラッパー（再マウントなし）
 ├── page.tsx            # ルートUI
 ├── loading.tsx         # Suspense fallback
-├── error.tsx           # Error boundary（Client Component必須、詳細は error-handling-logging）
+├── error.tsx           # Error boundary（Client Component必須、reset()で再試行可能）
 ├── not-found.tsx       # 404 UI
 ├── route.ts            # API endpoint（page.tsxと共存不可）
 ├── template.tsx        # 毎回再マウントされるlayout
 ├── default.tsx         # Parallel route fallback
 └── opengraph-image.tsx # OG画像生成
+```
+
+### error.tsx / not-found.tsx
+
+```typescript
+// error.tsx — 'use client' 必須。digest でサーバーエラーの詳細を隠蔽
+'use client'
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return <div><h2>エラーが発生しました</h2><button onClick={() => reset()}>再試行</button></div>
+}
+
+// not-found.tsx — notFound() で最も近い not-found.tsx を表示
+import { notFound } from 'next/navigation'
+// 動的ルート内で: if (!data) notFound()
 ```
 
 ---
@@ -113,27 +127,14 @@ export default function DashboardLayout({
 
 ### Client Navigation Hooks
 
-```typescript
-'use client'
-import { useRouter, usePathname, useSearchParams, useParams } from 'next/navigation'
+| Hook | 用途 | 注意 |
+|------|------|------|
+| `useRouter()` | `push`/`replace`/`back`/`refresh` | Client Component のみ |
+| `usePathname()` | 現在パス名 (`/products/123`) | - |
+| `useSearchParams()` | クエリパラメータ (読み取り専用) | Suspense 内で使用 |
+| `useParams()` | 動的セグメント値 (`{ slug: 'hello' }`) | - |
 
-// useRouter — プログラム的ナビゲーション（Client Component のみ）
-const router = useRouter()
-router.push('/dashboard')    // ソフトナビゲーション
-router.replace('/login')     // 履歴を置換
-router.back()                // 戻る
-router.refresh()             // 現在ルートを再検証（キャッシュクリアなし）
-
-// usePathname — 現在のパス名
-const pathname = usePathname() // '/products/123'
-
-// useSearchParams — クエリパラメータ（読み取り専用）
-const searchParams = useSearchParams() // Suspense 内で使用
-searchParams.get('category') // 'shoes'
-
-// useParams — 動的セグメントの値
-const params = useParams() // { slug: 'hello' }
-```
+全て `'next/navigation'` からimport。コード例は reference.md 参照。
 
 ### Intercepting Routes (Modal Pattern)
 
@@ -204,33 +205,19 @@ export async function ProductList({ category, page }: ProductFilters) {
 
 Next.js 15 では fetch のデフォルトが `no-store` に変更。明示的なキャッシュ設定が必要。
 
-```typescript
-// Dynamic（デフォルト）— 毎リクエスト取得
-fetch(url)
-fetch(url, { cache: 'no-store' })
+**判断ルール**: Static > ISR > On-demand > Dynamic（パフォーマンス順に検討）
+- 全ユーザー共通 + ほぼ不変 -> `cache: 'force-cache'`
+- 全ユーザー共通 + 定期更新 -> `next: { revalidate: N }`
+- 全ユーザー共通 + イベント駆動 -> `next: { tags: [...] }` + `revalidateTag()`
+- パーソナライズ/リアルタイム -> `fetch(url)` (デフォルト no-store)
 
-// Static — ビルド時に固定
-fetch(url, { cache: 'force-cache' })
+See reference.md > Caching Decision Flowchart for complete fetch option examples.
 
-// ISR — 一定時間後に再検証
-fetch(url, { next: { revalidate: 60 } })
+### Revalidation の使い分け
 
-// Tag-based — 任意タイミングで無効化
-fetch(url, { next: { tags: ['products'] } })
-```
-
-### Revalidation（Server Action から）
-
-```typescript
-'use server'
-import { revalidateTag, revalidatePath } from 'next/cache'
-
-export async function updateProduct(id: string, data: ProductData) {
-  await db.product.update({ where: { id }, data })
-  revalidateTag('products')   // タグ指定で関連キャッシュを無効化
-  revalidatePath('/products') // パス指定でページを再検証
-}
-```
+- `revalidateTag('tag')` — タグに紐づく全 fetch/cache を無効化（推奨: 影響範囲が明確）
+- `revalidatePath('/path')` — 特定パスのページを再検証（ページ全体が対象）
+- **判断基準**: データモデル単位の無効化は Tag、ページ単位の再生成は Path
 
 ### Route Segment Config
 
@@ -442,6 +429,7 @@ import { redirect } from 'next/navigation'
 export async function addToCart(productId: string) {
   const cookieStore = await cookies()
   const sessionId = cookieStore.get('session')?.value
+  // redirect() は内部で throw するため try/catch の外で呼ぶ
   if (!sessionId) redirect('/login')
 
   try {
@@ -457,6 +445,10 @@ export async function addToCart(productId: string) {
   }
 }
 ```
+
+**Server Actions の重要ルール**:
+- `redirect()` は内部で例外を throw する。try/catch 内で呼ぶとキャッチされてリダイレクトが失敗する
+- Progressive Enhancement: `<form action={serverAction}>` は JS 無効でも動作する（HTML フォーム送信にフォールバック）
 
 ---
 

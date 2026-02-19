@@ -220,6 +220,8 @@ async function processWebhookIdempotent(event: WebhookEvent) {
 }
 ```
 
+**`X-Line-Retry-Key` header**: LINE はリトライ時にこのヘッダーを付与する。`webhookEventId` と併用して重複検知の信頼性を高める。初回リクエストにはこのヘッダーは含まれないため、存在自体がリトライの証拠になる。
+
 ---
 
 ## トラブルシューティング

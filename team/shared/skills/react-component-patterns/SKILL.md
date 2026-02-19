@@ -325,11 +325,21 @@ export function TodoItem({ todo }: { todo: Todo }) {
 
 外部制御と内部state両方をサポートするコンポーネントAPI設計。
 
-**パターン**: `value` (controlled) と `defaultValue` (uncontrolled) の両方を受け取り、`controlledValue !== undefined` で分岐。内部stateはuncontrolled時のみ更新。
+```tsx
+function Toggle({ value: controlledValue, defaultValue = false, onChange }: ToggleProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
+  const handleChange = () => {
+    const next = !value;
+    if (!isControlled) setInternalValue(next);
+    onChange?.(next);
+  };
+  return <button role="switch" aria-checked={value} onClick={handleChange}>...</button>;
+}
+```
 
 **判断**: フォーム連携やテストでcontrolled必須。スタンドアロン利用ではuncontrolledが便利。両対応で汎用性を確保。
-
-実装テンプレートは [reference.md](reference.md) の「Controlled/Uncontrolled 両対応コンポーネント」参照。
 
 ---
 

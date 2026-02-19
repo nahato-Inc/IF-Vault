@@ -1,6 +1,6 @@
 ---
 name: micro-interaction-patterns
-description: "Use when implementing UI micro-interactions in Next.js App Router with Tailwind CSS and Framer Motion. Covers loading states (skeleton, shimmer, Suspense, loading.tsx, useOptimistic), toast notifications (sonner, snackbar, banner), form validation UX (onBlur/onChange timing, inline errors, useFormStatus), empty states, error.tsx boundaries (reset, retry), success feedback, page and list transitions (AnimatePresence, layout prop), button states, streaming UI (useChat), and progress bars. Does NOT cover UX psychology (ux-psychology), component API design (react-component-patterns), or token definitions (design-token-system)."
+description: "Use when implementing, debugging, reviewing, or refactoring UI micro-interactions in Next.js App Router with Tailwind CSS and Framer Motion. Covers loading states (skeleton, shimmer, Suspense, loading.tsx, useOptimistic), toast notifications (sonner, snackbar, banner), form validation UX (onBlur/onChange timing, inline errors, useFormStatus), empty states (first-use, no-results, error), error.tsx boundaries (reset, retry, graceful degradation), success feedback (checkmark animation), page and list transitions (AnimatePresence, layout prop, View Transitions API), hover/focus-visible/active/disabled/loading button states, streaming UI (Suspense streaming, AI chat useChat), and progress bars. Does NOT cover component API design (react-component-patterns), cognitive UX (ux-psychology), or accessibility standards (web-design-guidelines)."
 user-invocable: false
 ---
 
@@ -330,11 +330,7 @@ function LoadingButton({ loading, children, ...props }: LoadingButtonProps) {
 
 ## Part 9: Streaming UI [HIGH]
 
-### 20. Suspense ストリーミング
-
-Part 1 の Suspense パターンと同じ原理。独立したデータフェッチを個別 `Suspense` で囲み段階的に表示する。複数セクションの streaming RSC 実装例は reference.md 参照。
-
-### 21. AI応答ストリーミング（Vercel AI SDK）
+### 20. AI応答ストリーミング（Vercel AI SDK）
 
 ```tsx
 const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat();

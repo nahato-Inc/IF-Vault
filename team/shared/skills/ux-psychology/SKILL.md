@@ -1,7 +1,7 @@
 ---
 name: ux-psychology
+description: Use when designing, evaluating, reviewing, auditing, or improving UI/UX with cognitive psychology, Nielsen heuristics, and Gestalt laws. Apply to diagnose usability issues, validate information architecture, optimize form validation, structure navigation, design onboarding, craft micro-copy, build AI chat interfaces, plan notifications, and assess neurodiversity. Covers cognitive load, Hick's Law, progressive disclosure, Doherty threshold, Fitts's Law, peak-end rule, default bias, reactance, labor illusion, dark patterns, dashboards, data tables, modals, and search UI. Provides the psychological WHY while web-design-guidelines covers WCAG/aria and micro-interaction-patterns covers animation. Does NOT cover WCAG/aria implementation (web-design-guidelines), animation code (micro-interaction-patterns), or component API design (react-component-patterns).
 user-invocable: false
-description: Use when designing, evaluating, reviewing, auditing, or improving UI/UX with cognitive psychology, Nielsen heuristics, and Gestalt laws. Apply to diagnose usability issues, validate information architecture, optimize form validation, structure navigation, design onboarding, craft micro-copy, build AI chat interfaces, plan notifications, and assess neurodiversity. Covers cognitive load, Hick's Law, progressive disclosure, Doherty threshold, Fitts's Law, peak-end rule, default bias, reactance, labor illusion, dark patterns, dashboards, data tables, modals, and search UI. Does NOT cover WCAG/aria implementation (web-design-guidelines), animation code (micro-interaction-patterns), or chart library setup (dashboard-data-viz).
 ---
 
 # UX for App Development
@@ -22,6 +22,10 @@ description: Use when designing, evaluating, reviewing, auditing, or improving U
 - 単体テスト・E2Eテストのコード（テストUI自体の設計でない限り）
 - API設計（エンドポイント・レスポンス構造のみ）
 - パフォーマンス最適化（描画・レンダリング以外）
+
+## 番号体系
+
+`#1`-`#29`: スキル原則（認知負荷、フィードバック、AI UX等）。`H1`-`H10`: ニールセンの10ヒューリスティクス参照。reference.md からも同じ番号で相互参照可能。
 
 ## 他スキルとの棲み分け
 

@@ -1,18 +1,7 @@
 ---
 name: line-bot-dev
+description: "LINE Bot development with Messaging API, @line/bot-sdk, and LIFF mini apps for Node.js/Next.js. Covers webhook signature verification, message types (text, template, flex, quick reply), rich menus, LIFF initialization, channel access tokens, reply vs push cost optimization, multicast and broadcast, postback routing, Supabase user sync, webhook idempotency, and conversational UX. Use when building LINE bots, implementing webhooks, verifying signatures, designing flex messages, creating template messages, setting up rich menus, developing LIFF apps, integrating LINE with Next.js, handling postback events, syncing LINE users to database, optimizing delivery costs, or debugging LINE bot issues. Does NOT cover general web architecture (nextjs-app-router-patterns), auth/RLS design (supabase-auth-patterns), or cognitive UX (ux-psychology)."
 user-invocable: false
-description: >-
-  Use when building LINE bots, implementing webhooks, verifying signatures,
-  designing flex/template messages, setting up rich menus, developing LIFF
-  apps, integrating LINE with Next.js, handling postback events, or syncing
-  LINE users to database. Covers Messaging API, @line/bot-sdk, LIFF mini
-  apps, webhook signature verification, message types (text, template, flex,
-  quick reply), channel access tokens, reply vs push cost optimization,
-  multicast/broadcast, postback routing, Supabase user sync, webhook
-  idempotency, and conversational UX. Does NOT cover LINE Login/OAuth
-  (`supabase-auth-patterns`), LIFF viewport/safe-area
-  (`mobile-first-responsive`), or structured logging
-  (`error-handling-logging`).
 ---
 
 # LINE Bot Development
@@ -87,7 +76,7 @@ const client = new messagingApi.MessagingApiClient({
 });
 ```
 
-Node.js LTS 以上必須。SDK の最新バージョンを使うこと。
+Node.js >= 20 必須（SDK v10.x）。**Breaking change**: v10.x で `replyMessage` 等は位置引数 `(token, messages)` からオブジェクト引数 `({ replyToken, messages })` に変更。
 
 ### 2. Channel Access Token
 
@@ -162,6 +151,43 @@ await client.replyMessage({
 ```
 
 Quick Reply: 最大**13**アイテム、1回タップで消える。UX設計（項目順序の系列位置効果）は `ux-psychology` 参照。詳細は [reference.md](reference.md) 参照。
+
+### 6. 画像・スタンプ・動画の送信
+
+```js
+// 画像メッセージ
+await client.replyMessage({
+  replyToken: event.replyToken,
+  messages: [{
+    type: 'image',
+    originalContentUrl: 'https://example.com/image.jpg',  // HTTPS必須、最大10MB
+    previewImageUrl: 'https://example.com/image_preview.jpg',  // 最大1MB
+  }],
+});
+
+// スタンプ（packageId + stickerId は LINE Sticker List 参照）
+await client.replyMessage({
+  replyToken: event.replyToken,
+  messages: [{ type: 'sticker', packageId: '446', stickerId: '1988' }],
+});
+```
+
+### 7. ユーザー送信コンテンツの取得
+
+ユーザーが送った画像・動画・音声・ファイルをダウンロードする。
+
+```typescript
+if (event.type === 'message' && event.message.type === 'image') {
+  const stream = await client.getMessageContent(event.message.id);
+  // stream は Readable — ファイル保存やクラウドストレージにパイプ
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(chunk as Buffer);
+  const buffer = Buffer.concat(chunks);
+  // Supabase Storage 等にアップロード
+}
+```
+
+**注意**: コンテンツは一定期間後に削除される。受信後すぐにダウンロードすること。
 
 ---
 

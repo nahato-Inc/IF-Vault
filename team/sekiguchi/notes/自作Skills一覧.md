@@ -23,8 +23,8 @@ UIを触る作業で自動発火する認知心理学ベースのUX設計スキ�
 | 項目 | 値 |
 |------|-----|
 | 発火方式 | 自動 |
-| SKILL.md | 400行 |
-| reference.md | 534行 |
+| SKILL.md | 404行 |
+| reference.md | 533行 |
 
 29原則＋ニールセン10ヒューリスティクス＋AI UXパターン＋ニューロダイバーシティを8パートで構成。認知心理学の「なぜそうすべきか」に特化し、「どう実装するか」は他スキルに委譲。
 
@@ -71,7 +71,7 @@ discriminated unions、branded types、exhaustive switch、Zod runtime validatio
 | 項目 | 値 |
 |------|-----|
 | 発火方式 | 自動 |
-| SKILL.md | 190行 |
+| SKILL.md | 181行 |
 | reference.md | 184行 |
 
 Phase 1(調査)→Phase 2(パターン分析)→Phase 3(仮説検証)→Phase 4(修正検証)の4段階メソッド。git bisect、境界ロギング、単一変数仮説テスト、3回修正ルールを体系化。
@@ -83,7 +83,7 @@ Phase 1(調査)→Phase 2(パターン分析)→Phase 3(仮説検証)→Phase 4(
 | 項目 | 値 |
 |------|-----|
 | 発火方式 | 自動 |
-| SKILL.md | 316行 |
+| SKILL.md | 319行 |
 | reference.md | 548行 |
 
 AppErrorクラス階層、error.tsx/global-error.tsx境界、構造化JSONロギング、Sentry連携、API標準エラーレスポンスを8セクションで構成。Decision Treeが入口にあり、どのパターンを使うべきか即座に判断できる。
@@ -98,15 +98,15 @@ AppErrorクラス階層、error.tsx/global-error.tsx境界、構造化JSONロギ
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 494行 | 472行 | ルート設計・キャッシュ戦略決定時 |
+| 486行 | 472行 | ルート設計・キャッシュ戦略決定時 |
 
-App Router 15のルーティング、データフェッチ、キャッシュ(ISR/PPR/use cache)、Suspense streaming、Server Actions、Middleware。500行ギリギリまで詰め込んだ最大級スキル。
+App Router 15のルーティング、データフェッチ、キャッシュ(ISR/PPR/use cache)、Suspense streaming、Server Actions、Middleware、error.tsx/not-found.txパターン。
 
 ### react-component-patterns
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 461行 | 458行 | コンポーネント設計・リファクタリング時 |
+| 471行 | 458行 | コンポーネント設計・リファクタリング時 |
 
 Compound components、asChild/Slot、CVAバリアント、React Hook Form + Zod + Server Actions、SC/CC境界設計。コンポーネントの「内部設計」に特化。
 
@@ -114,15 +114,15 @@ Compound components、asChild/Slot、CVAバリアント、React Hook Form + Zod 
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 495行 | 1092行 | Tailwindユーティリティ・バリアント構築時 |
+| 190行 | 649行 | Tailwindユーティリティ・バリアント構築時 |
 
-Tailwind v4 CSS-first @theme設定、CVAコンポーネント、container queries、@utility、dark mode、cn()。189行から495行に大幅拡充し、reference.mdは1092行と全スキル最大級。
+Tailwind v4 CSS-first @theme設定、CVAコンポーネント、container queries、@utility、dark mode、cn()。Token Efficiency改善でSKILL.mdを190行に圧縮、コード例をreference.mdに集約。
 
 ### testing-strategy
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 298行 | 441行 | テスト設計・バグ修正時テスト作成時 |
+| 273行 | 417行 | テスト設計・バグ修正時テスト作成時 |
 
 TDD Red-Green-Refactorサイクル、テスト品質分析、AAA、Mock境界ルール、Playwright E2E。全コード例がTypeScript/Vitest統一。
 
@@ -138,7 +138,7 @@ TDD Red-Green-Refactorサイクル、テスト品質分析、AAA、Mock境界ル
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 337行 | 673行 | SQL最適化・遅いクエリ診断時 |
+| 329行 | 673行 | SQL最適化・遅いクエリ診断時 |
 
 インデックス戦略(B-tree/GIN/GiST/BRIN)、EXPLAIN ANALYZE、Supavisor接続プール、RLS性能最適化、同時実行制御。ansem-db-patternsとは「設計 vs ランタイム性能」で棲み分け。
 
@@ -146,15 +146,15 @@ TDD Red-Green-Refactorサイクル、テスト品質分析、AAA、Mock境界ル
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 302行 | 358行 | バンドル削減・再レンダリング抑制時 |
+| 328行 | 358行 | バンドル削減・再レンダリング抑制時 |
 
-async request waterfall排除、JSバンドルサイズ削減、Core Web Vitals(LCP/INP/CLS)、React再レンダリング最適化、next/image・next/font設定。
+async request waterfall排除、JSバンドルサイズ削減、Core Web Vitals(LCP/INP/CLS)、React再レンダリング最適化、next/image・next/font設定。CWV目標値テーブルと診断Decision Tree追加。
 
 ### security-review
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 277行 | 143行 | `/security-review`で手動起動 |
+| 234行 | 143行 | `/security-review`で手動起動 |
 
 OWASP Top 10ベースの脆弱性検出。Confidence Levels(HIGH/MEDIUM/LOW)分類、Do Not Flagリスト、Severity Decision Tree。user-invocable:falseに変更済み（自動発火に対応）。
 
@@ -162,7 +162,7 @@ OWASP Top 10ベースの脆弱性検出。Confidence Levels(HIGH/MEDIUM/LOW)分�
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 295行 | 379行 | パイプライン構築・デプロイ設定時 |
+| 277行 | 379行 | パイプライン構築・デプロイ設定時 |
 
 GitHub Actions workflow、Vercel preview/production deploy、環境変数管理、trunk-basedブランチ戦略、Dependabot、rollback。
 
@@ -170,7 +170,7 @@ GitHub Actions workflow、Vercel preview/production deploy、環境変数管理�
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 307行 | 259行 | Dockerfile作成・イメージサイズ削減時 |
+| 291行 | 294行 | Dockerfile作成・イメージサイズ削減時 |
 
 Multi-stage build、distroless/alpine最適化、docker-compose、non-rootユーザー、health check。言語別Dockerfileテンプレート付き。
 
@@ -184,7 +184,7 @@ Multi-stage build、distroless/alpine最適化、docker-compose、non-rootユー
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 350行 | 753行 | ダッシュボード構築・データ表示設計時 |
+| 350行 | 663行 | ダッシュボード構築・データ表示設計時 |
 
 サイドバーレイアウト、KPIカード、TanStack Table、Recharts/Tremor、Supabase Realtime、フィルタパターン、エクスポート。
 
@@ -192,7 +192,7 @@ Multi-stage build、distroless/alpine最適化、docker-compose、non-rootユー
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 331行 | 578行 | カラーパレット設計・トークン定義時 |
+| 377行 | 578行 | カラーパレット設計・トークン定義時 |
 
 3層トークン階層(primitive/semantic/component)、OKLCH色空間、L値差0.40コントラスト、globals.css @theme inline、next-themes統合。
 
@@ -200,7 +200,7 @@ Multi-stage build、distroless/alpine最適化、docker-compose、non-rootユー
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 369行 | 842行 | UI状態フィードバック・アニメーション実装時 |
+| 365行 | 842行 | UI状態フィードバック・アニメーション実装時 |
 
 スケルトン/シマー、トースト(sonner)、フォームバリデーションUX、空状態、error.tsx境界、ページ遷移、ボタン状態、ストリーミングUI。
 
@@ -208,7 +208,7 @@ Multi-stage build、distroless/alpine最適化、docker-compose、non-rootユー
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 362行 | 569行 | モバイルレスポンシブ・LIFF実装時 |
+| 358行 | 569行 | モバイルレスポンシブ・LIFF実装時 |
 
 LIFF Size Modes、safe-area insets、viewport units(svh/lvh/dvh)、タッチターゲット48dp、PWA Serwist、virtual keyboard、bottom sheet。WCAG準拠のviewport設定に修正済み。
 
@@ -216,17 +216,17 @@ LIFF Size Modes、safe-area insets、viewport units(svh/lvh/dvh)、タッチタ�
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 497行 | 1163行 | アクセシビリティ監査・HTML設計時 |
+| 293行 | 969行 | アクセシビリティ監査・HTML設計時 |
 
-WCAG 2.2 AA、セマンティックHTML、コントラスト・キーボードナビ、フォーム・バリデーション、SEO(meta/OG/JSON-LD/sitemap)、Core Web Vitals、dark mode、i18n、print styles。フレームワーク非依存のWeb標準ルール集。
+WCAG 2.2 AA、セマンティックHTML、コントラスト・キーボードナビ、フォーム・バリデーション、SEO(meta/OG/JSON-LD/sitemap)、Core Web Vitals、dark mode、i18n、print styles。Token Efficiency改善でSKILL.mdを293行に圧縮。
 
 ### line-bot-dev
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 339行 | 339行 | LINE Bot開発・Webhook署名検証時 |
+| 365行 | 341行 | LINE Bot開発・Webhook署名検証時 |
 
-Messaging API、@line/bot-sdk、LIFF mini app、Webhook署名検証、Flex Message、Rich Menu、reply vs push最適化、冪等性テンプレート。
+Messaging API、@line/bot-sdk、LIFF mini app、Webhook署名検証、Flex Message、Rich Menu、reply vs push最適化、冪等性テンプレート。画像・スタンプ送信とgetMessageContentのコンテンツ取得パターン追加。
 
 ---
 
@@ -238,7 +238,7 @@ Messaging API、@line/bot-sdk、LIFF mini app、Webhook署名検証、Flex Messa
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 500行 | 406行 | オブ本格運用・クエリ作成時 |
+| 492行 | 360行 | オブ本格運用・クエリ作成時 |
 
 Flavored Markdown（wikilinks/callouts/embeds）、Bases（.base YAML/filter/formula）、Automation（Dataview DQL/Templater/QuickAdd）の3ドメイン。
 
@@ -246,7 +246,7 @@ Flavored Markdown（wikilinks/callouts/embeds）、Bases（.base YAML/filter/for
 
 | SKILL.md | reference.md | 発火タイミング |
 |----------|-------------|--------------|
-| 438行 | 259行 | 拡張機能開発・manifest設定時 |
+| 401行 | 311行 | 拡張機能開発・manifest設定時 |
 
 Chrome MV3、content scripts、popup UI、chrome.storage、background service worker、chrome.alarms、message passing、SNS DOM scraping。
 
@@ -261,8 +261,8 @@ Skillsの作成・検索・評価・最適化を行うメタスキル。`/skill-
 | 項目 | 値 |
 |------|-----|
 | 発火方式 | 手動 `/skill-forge` |
-| SKILL.md | 226行 |
-| reference.md | 321行 |
+| SKILL.md | 225行 |
+| reference.md | 320行 |
 
 3モード（Create/Search/Review）。8フェーズのCreate Mode、10項目100点スコアリング、Description Engineering方法論を搭載。全24スキルはこのskill-forgeの品質基準で作成・レビュー済み。
 
@@ -287,14 +287,26 @@ Skillsの作成・検索・評価・最適化を行うメタスキル。`/skill-
 
 ### 修正した主な問題
 
-| カテゴリ | 件数 |
-|---------|------|
-| SPEC違反（description超過、h4見出し等） | 3件 |
-| frontmatter不備（user-invocable漏れ、description形式） | 12件 |
-| コード重複（SKILL.md⇔reference.md間） | 5件 |
-| 技術的正確性（Playwright言語、WCAG違反等） | 3件 |
-| コンテンツ不足（tailwind拡充、SEO新設等） | 3件 |
-| ハードコード日付 | 7件 |
+**2026-02-17 Spec Compliance修正**
+
+| カテゴリ | 件数 | 詳細 |
+|---------|------|------|
+| user-invocable追加 | 13件 | frontmatterにフィールド自体がなかった13スキルに `false` を追加 |
+| user-invocable修正 | 1件 | security-reviewを `true` → `false` に変更 |
+| h4見出し除去 | 20箇所 | testing-strategy(4), security-review(2), vercel-react-best-practices(14)をボールド段落見出しに変換 |
+| description超過修正 | 1件 | supabase-postgres-best-practices: 1090→1015文字にトリミング |
+| "Does NOT cover"追加 | 19件 | 19スキルにスコープ境界テキストを追加 + nextjsの"Not for"→"Does NOT cover"統一 |
+| IF-Vault共有同期 | 24件 | 全24スキルのSKILL.mdをteam/shared/skills/にコピー |
+
+**2026-02-17 Token Efficiency + Content修正**
+
+| カテゴリ | 件数 | 詳細 |
+|---------|------|------|
+| Token Efficiency改善 | 22件 | SKILL.md内のコード例重複をreference.md参照に置換。特にtailwind(495→190行), web-design-guidelines(497→293行)で大幅圧縮 |
+| Content Completeness | 1件 | line-bot-dev: 画像・スタンプ送信 + getMessageContent追加 |
+| Completeness + Spec | 1件 | vercel-react-best-practices: CWV目標値テーブル + 診断Decision Tree追加 |
+| Accuracy + Completeness | 1件 | nextjs-app-router-patterns: error.tsx/not-found.txパターン追加、Client Navigation Hooksをテーブル化 |
+| IF-Vault再同期 | 33ファイル | 全24スキルのSKILL.md + 12個のreference.mdを同期 |
 
 ---
 
