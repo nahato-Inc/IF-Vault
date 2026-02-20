@@ -1,5 +1,5 @@
 ---
-date: 2026-02-14
+date: 2026-02-20
 tags: [Claude Code, オンボーディング, setup, Skills]
 status: active
 ---
@@ -14,20 +14,35 @@ nahato チーム向けのClaude Code導入・Skills活用ガイド。
 
 ## 初期セットアップ
 
-### 1. インストール
+### 1. Claude Code インストール
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-### 2. CLAUDE.mdを作る
+### 2. チーム環境を一括セットアップ（推奨）
 
-自分のホームディレクトリに設定ファイルを作る。Claude Codeはこのファイルを読んで応答をカスタマイズする。
+IF-Vault リポジトリのルートで以下を実行するだけ。Hooks・Skills・設定ファイルが全て自動でインストールされる。
 
 ```bash
-mkdir -p ~/.claude
-touch ~/.claude/CLAUDE.md
+bash team/shared/claude-code-setup/install.sh
 ```
+
+インストールされるもの:
+- **Hooks** (8個): セキュリティ・効率化スクリプト
+- **Skills** (24共有 + 3メタ = 27個): チーム共有スキル（シンボリックリンク）
+- **settings.json**: 破壊的コマンドの deny list + hooks 登録
+- **CLAUDE.md**: グローバル設定テンプレート
+
+セットアップ後にヘルスチェック:
+
+```bash
+bash team/shared/claude-code-setup/install.sh --verify
+```
+
+### 3. CLAUDE.md をカスタマイズ
+
+`~/.claude/CLAUDE.md` を開いて、自分の口調・スタイル・よく使う技術を追加する。
 
 中身の例:
 
@@ -42,9 +57,17 @@ touch ~/.claude/CLAUDE.md
 - Tailwind CSS
 ```
 
-### 3. プロジェクトCLAUDE.md
+### 4. プロジェクトCLAUDE.md
 
 リポジトリのルートに `.claude/CLAUDE.md` を置くと、そのプロジェクト固有の指示ができる。IF-Vaultには既に設定済み。
+
+### 5. コミュニティスキルを追加（任意）
+
+```bash
+bash team/shared/claude-code-setup/install.sh --community
+```
+
+11個のコミュニティスキル（deep-research, pdf, docx 等）が一括でインストールされる。
 
 ## Skillsの使い方
 
@@ -52,7 +75,60 @@ touch ~/.claude/CLAUDE.md
 
 特定分野の知識パック。インストールすると、関連する作業をしたときに自動で知識が適用される。UXの原則、セキュリティチェック、DBの設計パターンなどがある。
 
-### インストール方法
+### ロール別おすすめSkills
+
+install.sh で全スキルが入るが、特に注力すべきスキルはロールによって異なる。
+
+#### 全員必須（Tier 1）
+
+| スキル | 効果 |
+|--------|------|
+| ux-psychology | UI/UXの認知心理学ベース設計 |
+| natural-japanese-writing | AI臭を排除した自然な日本語 |
+| ansem-db-patterns | PostgreSQL本番スキーマ設計 |
+| typescript-best-practices | 型安全パターンと実装ルール |
+| systematic-debugging | 根本原因調査の4段階プロセス |
+| error-handling-logging | エラー分類とログ構造化設計 |
+
+#### フロントエンド担当
+
+| スキル | 効果 |
+|--------|------|
+| react-component-patterns | React合成・CVA・SC/CC設計 |
+| tailwind-design-system | Tailwind v4 CSS-first設定 |
+| nextjs-app-router-patterns | App Router ルーティング・キャッシュ |
+| vercel-react-best-practices | ランタイムパフォーマンス最適化 |
+| design-token-system | トークン階層・OKLCH色・ダークモード |
+| micro-interaction-patterns | ローディング・トースト・フォームUX |
+| web-design-guidelines | WCAG・セマンティックHTML・SEO |
+| mobile-first-responsive | LIFF/PWA・モバイルファースト |
+
+#### DB・バックエンド担当
+
+| スキル | 効果 |
+|--------|------|
+| supabase-auth-patterns | Auth・RLS・セッション管理 |
+| supabase-postgres-best-practices | クエリ最適化・接続プール |
+| security-review | 脆弱性検出・セキュリティ監査 |
+| docker-expert | Docker最適化・Compose・セキュア化 |
+| ci-cd-deployment | GitHub Actions・Vercel自動化 |
+| testing-strategy | TDD・テスト品質分析フロー |
+
+### 個別にスキルを追加/削除したい場合
+
+install.sh を使わず手動で管理したい場合は、シンボリックリンクを使う。
+
+```bash
+# 追加（IF-Vault ルートで実行）
+ln -s "$(pwd)/team/shared/skills/スキル名" ~/.claude/skills/スキル名
+
+# 削除
+rm ~/.claude/skills/スキル名
+```
+
+詳細は `team/shared/skills/README.md` を参照。
+
+### コミュニティスキル（手動インストール）
 
 ```bash
 # 検索
@@ -61,54 +137,9 @@ npx skills find [キーワード]
 # インストール（グローバル）
 npx skills add <owner/repo@skill> -g -y
 
-# アップデート確認
-npx skills check
-
-# 全スキルアップデート
+# アップデート
 npx skills update
 ```
-
-### おすすめSkillsセット
-
-チームで使うと効果が高いもの。
-
-#### 全員向け
-
-| スキル | 効果 | インストール |
-|--------|------|------------|
-| security-review | コードの脆弱性チェック | `npx skills add getsentry/sentry-agent-skills@security-review -g -y` |
-| typescript-best-practices | TypeScriptの型安全パターン | `npx skills add 0xbigboss/claude-code@typescript-best-practices -g -y` |
-| git-advanced-workflows | Git操作のベストプラクティス | `npx skills add wshobson/agents@git-advanced-workflows -g -y` |
-
-#### フロントエンド担当
-
-| スキル | 効果 |
-|--------|------|
-| vercel-react-best-practices | React/Next.jsパフォーマンス最適化 |
-| tailwind-design-system | Tailwind CSSデザインシステム |
-| web-design-guidelines | WCAG 2.2アクセシビリティ準拠 |
-
-#### DB・バックエンド担当
-
-| スキル | 効果 |
-|--------|------|
-| supabase-postgres-best-practices | PostgreSQLの最適化34ルール |
-| ansem-db-patterns | ANSEM設計パターン（チーム独自） |
-| api-design-principles | REST/GraphQL API設計原則 |
-
-### チーム共有Skills
-
-`team/shared/skills/` にチーム共有スキルが置いてある。シンボリックリンクで自分の環境に反映する。
-
-```bash
-# UX心理学スキル（UI作業で自動発火）
-ln -s /path/to/IF-Vault/team/shared/skills/ux-psychology ~/.claude/skills/ux-psychology
-
-# 日本語文書品質スキル（日本語ドキュメント執筆で自動発火）
-ln -s /path/to/IF-Vault/team/shared/skills/natural-japanese-writing ~/.claude/skills/natural-japanese-writing
-```
-
-`/path/to/IF-Vault` は自分の環境のパスに置き換えること。
 
 ### 自動発火 vs 手動起動
 
@@ -124,7 +155,7 @@ ln -s /path/to/IF-Vault/team/shared/skills/natural-japanese-writing ~/.claude/sk
 mv ~/.claude/skills/ux-psychology ~/.claude/skills/_ux-psychology
 
 # 完全削除
-npx skills remove ux-psychology -g
+rm ~/.claude/skills/スキル名
 ```
 
 ## 便利な使い方
@@ -136,30 +167,32 @@ npx skills remove ux-psychology -g
 | コマンド | 動作 |
 |---------|------|
 | `/skill-forge` | Skills作成・検索・評価ツール |
+| `/claude-env-optimizer` | 環境ヘルスチェック・メンテナンス |
+| `/context-economy` | トークン最適化 |
 | `/baseline-ui` | UIの基本チェック |
-| `/fixing-accessibility` | アクセシビリティ修正 |
 
 ### ヘルスチェック
 
-インストール済みSkillsの状態を一括チェックするスクリプトがある。
-
 ```bash
-bash team/guchi/code-snippets/skills-health-check.sh
+bash team/shared/claude-code-setup/install.sh --verify
 ```
+
+Skills数・SKILL.md有無・Hooks実行権限・settings.json deny数をチェックする。
 
 ## 注意点
 
 - Skillsは毎回コンテキストにロードされるため、入れすぎるとトークン消費が増える
 - 重いスキルが同時発火すると応答が遅くなることがある
-- 外部リポジトリ製のスキルは `npx skills update` で最新に保つ
+- シンボリックリンク経由なので `git pull` で全メンバーに最新が反映される
 - 機密情報（APIキーなど）はCLAUDE.mdに書かない
 
 ## 困ったら
 
-- guchiのSkills一覧: `team/guchi/notes/Claude-Code-Skills一覧.md`
-- Skills品質レポート: `team/guchi/notes/Skills-49個スキャンレポート.md`
-- 自作Skills詳細: `team/guchi/notes/自作Skills一覧.md`
+- Skills一覧: `team/shared/skills/README.md`
+- セットアップ詳細: `team/shared/claude-code-setup/README.md`
+- Skills品質レポート: `team/sekiguchi/notes/Skills-49個スキャンレポート.md`
+- 自作Skills詳細: `team/sekiguchi/notes/自作Skills一覧.md`
 
 ---
 
-_最終更新: 2026-02-14_
+_最終更新: 2026-02-20_

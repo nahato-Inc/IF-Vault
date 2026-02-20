@@ -11,6 +11,31 @@ bash team/shared/claude-code-setup/install.sh
 
 確認プロンプトが出るので `y` で続行。既存ファイルは上書きしない（差分がある hooks のみバックアップ＆更新）。
 
+### オプション
+
+```bash
+# ヘルスチェック（インストール後の検証）
+bash team/shared/claude-code-setup/install.sh --verify
+
+# コミュニティスキル一括インストール
+bash team/shared/claude-code-setup/install.sh --community
+
+# 両方同時
+bash team/shared/claude-code-setup/install.sh --verify --community
+```
+
+### ロール別クイックスタート
+
+インストール時にロールを選択すると、推奨スキルが表示される。
+
+| ロール | 説明 | 重点スキル |
+|--------|------|-----------|
+| 全員共通 | 全27スキルをインストール | Tier 1〜4 全部 |
+| フロントエンド | UI/UX・React・デザイン系を優先表示 | react-component-patterns, tailwind-design-system, design-token-system 等 |
+| バックエンド | DB・API・インフラ系を優先表示 | ansem-db-patterns, supabase-postgres-best-practices, docker-expert 等 |
+
+※ どのロールでも全スキルがインストールされる。推奨表示は参考情報。
+
 ## 何がインストールされるか
 
 ### Hooks（8スクリプト）
@@ -34,27 +59,45 @@ settings.json に登録される破壊的コマンドのブロックリスト:
 - `git reset --hard` / `git clean -fd`
 - `git checkout .` / `git restore .`
 
-### Skills（19個・チーム自作）
+### Skills（24個 共有 + 3個 メタ = 27個）
 
-フロントエンド、バックエンド、品質管理、DevOps 等のスキル。`~/.claude/skills/` にインストールされる。
+`team/shared/skills/` の 24 スキルを **シンボリックリンク** で `~/.claude/skills/` にインストール。加えてメタスキル 3 個（claude-env-optimizer, context-economy, skill-forge）をリンク。
 
-一覧: ci-cd-deployment, claude-env-optimizer, context-economy, dashboard-data-viz, design-token-system, docker-expert, error-handling-logging, line-bot-dev, micro-interaction-patterns, mobile-first-responsive, natural-japanese-writing, nextjs-app-router-patterns, obsidian-power-user, react-component-patterns, skill-forge, supabase-auth-patterns, tailwind-design-system, testing-strategy, web-design-guidelines
+一覧:
 
-### コミュニティスキル（17個・手動インストール）
+**共有スキル (24個):** ansem-db-patterns, chrome-extension-dev, ci-cd-deployment, dashboard-data-viz, design-token-system, docker-expert, error-handling-logging, line-bot-dev, micro-interaction-patterns, mobile-first-responsive, natural-japanese-writing, nextjs-app-router-patterns, obsidian-power-user, react-component-patterns, security-review, supabase-auth-patterns, supabase-postgres-best-practices, systematic-debugging, tailwind-design-system, testing-strategy, typescript-best-practices, ux-psychology, vercel-react-best-practices, web-design-guidelines
 
-`/find-skills` で検索してインストール:
+**メタスキル (3個):** claude-env-optimizer, context-economy, skill-forge
 
-baseline-ui, deep-research, docx, ffmpeg, find-skills, finishing-a-development-branch, mermaid-visualizer, pdf, pptx, security-review, supabase-postgres-best-practices, systematic-debugging, typescript-best-practices, using-git-worktrees, ux-psychology, vercel-react-best-practices, xlsx
+### コミュニティスキル（11個・`--community` でインストール）
+
+`--community` フラグで npx 経由で一括インストール:
+
+baseline-ui, deep-research, docx, ffmpeg, find-skills, finishing-a-development-branch, mermaid-visualizer, pdf, pptx, xlsx, using-git-worktrees
 
 ### CLAUDE.md テンプレート
 
 `~/.claude/CLAUDE.md` が存在しない場合のみインストール。チーム共通のベースルール（日本語応対、セキュリティ、Git運用）を含む。**インストール後に自分の好みにカスタマイズすること。**
 
+## 安全性
+
+install.sh は既存環境を壊さない設計。
+
+| 対象 | 既存がある場合の動作 |
+|------|---------------------|
+| Skills（ディレクトリ or シンボリックリンク） | **スキップ**（上書きしない） |
+| Hooks | 差分チェック → 差分あれば `.bak` バックアップ後に上書き |
+| settings.json | Python マージで deny 追加のみ。既存 allow は保持 |
+| CLAUDE.md | **スキップ**（上書きしない） |
+
+`--verify` / `--community` はオプション引数。デフォルト動作は変わらない。
+
 ## セットアップ後にやること
 
 1. `~/.claude/CLAUDE.md` を開いて、自分の口調・スタイルを追加
 2. Claude Code を再起動（`claude` コマンドを再実行）
-3. `/find-skills` でコミュニティスキルをインストール
+3. `bash install.sh --verify` でヘルスチェック
+4. `bash install.sh --community` でコミュニティスキルをインストール
 
 ## ディレクトリ構成
 
@@ -63,11 +106,17 @@ baseline-ui, deep-research, docx, ffmpeg, find-skills, finishing-a-development-b
 ├── CLAUDE.md                  # 個人設定（テンプレートから作成）
 ├── settings.json              # hooks + deny list
 ├── hooks/                     # 8スクリプト
-├── skills/                    # 36スキル（自作19 + コミュニティ17）
+├── skills/                    # 27+ スキル（共有24 + メタ3 + コミュニティ）
 ├── session-env/               # セッション状態保存
 └── debug/                     # デバッグログ
 ```
 
 ## 更新方法
 
-git pull 後に再度 `install.sh` を実行すれば、差分のある hooks のみ更新される。既存の skills や CLAUDE.md は上書きされない。
+```bash
+git pull
+```
+
+シンボリックリンク経由なので `git pull` だけで全メンバーの共有スキルが更新される。再リンク不要。
+
+hooks に更新がある場合は再度 `install.sh` を実行すれば差分のみ更新。既存の skills や CLAUDE.md は上書きされない。
